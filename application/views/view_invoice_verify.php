@@ -172,6 +172,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
         <div class="layui-input-inline" style="width: 30%;">
             <select id="fdata_express_company" name="fdata_express_company" lay-verify="required" lay-filter='fdata_express_company' lay-search >
                 <option value="">请选择...</option>
+                <option value="自取">自取</option>
                 <option value="顺丰">顺丰</option>
                 <option value="京东">京东</option>
                 <option value="EMS">EMS</option>
@@ -209,6 +210,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 
 <script src="../public/layui/layui.all.js"></script>
+
 
 <script>
 	var $ = layui.$;

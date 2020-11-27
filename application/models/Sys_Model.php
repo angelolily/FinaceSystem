@@ -30,6 +30,7 @@ class Sys_Model extends CI_Model
         if(count($likedata)>0){
             $this->db->like($likedata);//判断需不需要查询
         }
+
         $this->db->limit($rows,$offset);
         $this->db->order_by('fdata_id','desc');
 
@@ -62,14 +63,14 @@ class Sys_Model extends CI_Model
         if($likedata!=""){
             $sql_query=$sql_query." ".$likedata;
         }
-        $this->db->limit($rows,$offset);
-        $this->db->order_by('fdata_id','desc');
+        $sql_query_total=$sql_query;
+        $sql_query=$sql_query." order by fdata_id desc limit $offset,$rows";
 
         $query = $this->db->query($sql_query);
         $ss=$this->db->last_query();
-        $r_total=$this->db->query("select FOUND_ROWS() as total")->row();
+        $r_total=$this->db->query($sql_query_total)->result_array();
         $row_arr=$query->result_array();
-        $result['count']=$r_total->total;//获取总行数
+        $result['count']=count($r_total);//获取总行数
         $result["data"] = $row_arr;
 
         return $result;
@@ -193,6 +194,26 @@ class Sys_Model extends CI_Model
 
 
 
+    }
+
+    //excel导出
+    public function output_excel($wheredata,$likedata)
+    {
+        $field='fdata_repoid,fdata_proj_name,fdata_invoice_name,fdata_amount
+                ,fdata_evaluation,fdata_invoice_type,fdata_invoice_date,fdata_invoice_money
+                ,fdata_invoice_num,fdata_money_date,fdata_refund_verify,fdata_refund_date,fdata_alter_date,fdata_alter_money
+                ,fdata_alter_rate,fdata_alter_amount,fdata_alter_invoice_num';
+        $sql_query="Select $field from finance_data a where not exists(select 1 from finance_data where fdata_total_flag=a.fdata_total_flag and fdata_id>a.fdata_id)";
+        if($wheredata!=""){
+            $sql_query=$sql_query." and ".$wheredata;
+        }
+        if($likedata!=""){
+            $sql_query=$sql_query." ".$likedata;
+        }
+        $query = $this->db->query($sql_query);
+        $ss=$this->db->last_query();
+        $row_arr=$query->result_array();
+        return $row_arr;
     }
 
 

@@ -79,21 +79,9 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                         </dl>
                     </li>
                     <li data-name="template" class="layui-nav-item">
-                        <a href="javascript:;" lay-href="<?php echo base_url('index.php/Control_invoiceApp')?>" lay-tips="页面" lay-direction="2">
+                        <a href="javascript:;" lay-href="<?php echo $url?>" lay-tips="页面" lay-direction="2">
                             <i class="layui-icon layui-icon-survey"></i>
-                            <cite>发票申请管理</cite>
-                        </a>
-                    </li>
-                    <li data-name="template" class="layui-nav-item">
-                        <a href="javascript:;" lay-href="<?php echo base_url('index.php/Control_invoiceVerify')?>" lay-tips="页面" lay-direction="2">
-                            <i class="layui-icon layui-icon-read"></i>
-                            <cite>发票审核管理</cite>
-                        </a>
-                    </li>
-                    <li data-name="template" class="layui-nav-item">
-                        <a href="javascript:;" lay-href="<?php echo base_url('index.php/Control_Invoice')?>" lay-tips="页面" lay-direction="2">
-                            <i class="layui-icon layui-icon-read"></i>
-                            <cite>发票信息管理</cite>
+                            <cite><?php echo $menu_name?></cite>
                         </a>
                     </li>
                 </ul>

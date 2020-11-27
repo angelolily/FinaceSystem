@@ -39,7 +39,7 @@ class Control_Login extends CI_Controller {
             $user_phone = $val['user_phone'];
             $user_pwd= $val['user_pwd'];
             try{
-                $user_data=$this->jko_Model->table_seleRow('c_phone,c_EmName,c_jgID,c_jgName,c_gzh_openid,c_pwd,c_job,c_state','jko_employer',array('c_phone'=>$user_phone));
+                $user_data=$this->jko_Model->table_seleRow('c_invoice_job,c_phone,c_EmName,c_jgID,c_jgName,c_gzh_openid,c_pwd,c_job,c_state','jko_employer',array('c_phone'=>$user_phone));
                 if(count($user_data)>0){
                     $pwd=$this->encrypt->decode($user_data[0]['c_pwd']);
                     if($user_pwd==$pwd){

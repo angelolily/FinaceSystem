@@ -115,7 +115,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                     <div class="layui-input-inline">
                         <select id="fdata_statue" name="fdata_statue"   >
                             <option value="">请选择...</option>
-                            <option value="申请审核中">申请审核中</option>
+                            <option value="申请审核中">发票申请中</option>
                             <option value="开票中">开票中</option>
                             <option value="发票已寄出">发票已寄出</option>
                             <option value="已开票">已开票</option>
@@ -141,6 +141,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				<button class="layui-btn layuiadmin-btn-admin layui-btn-normal" style="background-color: rgb(130,57,53)" data-type="add">开票信息填写</button>
 				<button class="layui-btn layuiadmin-btn-admin layui-btn-normal" style="background-color: rgb(64,116,52)" data-type="cancel">退票信息填写</button>
                 <button class="layui-btn layuiadmin-btn-admin layui-btn-normal"  data-type="update">改开票信息填写</button>
+                <button class="layui-btn layuiadmin-btn-admin layui-btn-normal" style="background-color: rgb(20,68,106)"  data-type="excel">导出Excel</button>
 			</div>
 			<!--数据表格-->
 			<table id="finace_data_table" lay-filter="finace_data_table"></table>
@@ -214,7 +215,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
     <div class="layui-form-item">
         <label class="layui-form-label layui-required ">收款日期</label>
         <div class="layui-input-inline" >
-            <input type="text" name="fdata_money_date" id="fdata_money_date" lay-verify="required" class="layui-input" >
+            <input type="text" name="fdata_money_date" id="fdata_money_date" class="layui-input" >
         </div>
     </div>
     <div class="layui-form-item">
@@ -313,7 +314,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 
 <script src="../public/layui/layui.all.js"></script>
-
+<script src="https://www.layuicdn.com/extend/excel/1.6.5/layui_exts/excel.min.js"></script>
 <script>
 	var $ = layui.$;
 	var g_proj=<?php echo json_encode($rpoid); ?>;//项目信息
@@ -324,6 +325,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
     var checkedSet = new Set();
 	var gb_seledata=[];//选中的记录
 	var gb_total_count=0;
+	var g_searchval;
     var g_bdate,g_edate,g_kbdate,g_kedate="";
 	var laydate = layui.laydate;
 	var finace_data_table =table.render({
@@ -368,7 +370,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
             ,{field: 'fdata_total_flag',align:'center',rowspan: 2,title: '合计标识',width:150,sort:true}
             ,{field: 'fdata_total_money',align:'center',rowspan: 2,title: '合计开票金额',width:200}
             ,{field: 'fdata_amount',align:'center',rowspan: 2,title: '评估额',width:150}
-            ,{field: 'fdata_evaluation',align:'center',rowspan: 2,title: '评估费',width:150}
+            ,{field: 'fdata_evaluation',align:'center',rowspan: 2,title: '应收评估费',width:150}
 			,{field: 'fdata_repoid',align:'center', rowspan: 2,title: '报告编号',width:150}
             ,{field: '', colspan: 6,align:'center',title: '开票信息',width:250}
             ,{field: '', colspan: 3,align:'center',title: '发票信息',width:350}
@@ -464,6 +466,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
     //监听搜索
     form.on('submit(LAY-invoice-search)', function(data){
         var field = data.field;
+        g_searchval= data.field;
         //执行重载
         finace_data_table.reload({
             where: { //设定异步数据接口的额外参数，任意设
@@ -489,12 +492,20 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                 return false;
             }
 
-            if(checkStatus.data[0].fdata_statue!='开票中')
+            if(checkStatus.data[0].fdata_statue!='开票中' && checkStatus.data[0].fdata_statue!='已开票' && checkStatus.data[0].fdata_statue!='发票已寄出')
             {
-                layer.alert('必须是已审核的项目，才能开具发票！');
+                layer.alert('必须是已审核的项目，或未收款，才能开具发票！');
                 return false;
 
             }
+            else
+            {
+                form.val('invoice_add',checkStatus.data[0]);
+
+            }
+
+
+
             layer.open({
                 type: 1
                 ,title: '发票信息填写'
@@ -668,6 +679,31 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                 }
             });
         }
+        ,excel: function(){
+
+            $.ajax({
+                type:'post',
+                url:'./Control_Invoice/outexcel',
+                data:{val:g_searchval},
+                dataType:'json',
+                async : false,
+                success:function (result) {
+                    console.log(result);
+                    result.unshift({fdata_repoid: '报告编号',fdata_proj_name: '项目名称'
+                                    ,fdata_invoice_name: '开票名称',fdata_amount: '评估额'
+                                    ,fdata_evaluation: '应收评估费',fdata_invoice_type: '发票类型'
+                                    ,fdata_invoice_date: '开票日期',fdata_invoice_money: '开票金额'
+                                    ,fdata_invoice_num: '发票号',fdata_money_date: '收款日期'
+                                    ,fdata_refund_verify: '退改审核',fdata_refund_date: '退票日期'
+                                    ,fdata_alter_date: '改开日期',fdata_alter_money: '改开金额'
+                                    ,fdata_alter_rate: '改开税率',fdata_alter_amount: '改开税额',fdata_alter_invoice_num: '改开发票号'});
+                    LAY_EXCEL.exportExcel(result, '表格导出.xlsx', 'xlsx');
+                }
+
+            });
+
+
+        }
     };
 
     //监听工具条
@@ -710,8 +746,9 @@ defined('BASEPATH') OR exit('No direct script access allowed');
         }
         else if(obj.event === 'detail_app')
         {
-            var temps=[];
-            temps['fdata_total_flag']=selectrow.fdata_total_flag;
+            var temps={};
+            temps.fdata_total_flag=selectrow.fdata_total_flag;
+            console.log(temps);
             layer.open({
                 type: 1
                 ,title: '明细数据'
@@ -720,11 +757,11 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                 ,area: ['1024px', '612px']
                 ,btn: ['取消']
                 ,anim: 3
+                ,toolbar:true
                 ,success: function(layero, index){
-                    stable=table.render({
+                    table.render({
                         elem: '#example',　　　//html中table窗口的id
                         height: 'full-150',
-                        id:'today_work',
                         url:'./Control_InvoiceVerify/get_invoiceApp_data',
                         loading: true,
                         where:{val:temps},
@@ -732,13 +769,14 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                             none: '空空如也'
                         },
                         title: '作业信息',
+                        toolbar:true,
                         page: {
                             layout: ['count', 'prev', 'page', 'next', 'limit', 'refresh', 'skip'],
-                            limit: 30
+                            limit: 20
 
                         },
                         cols: [[
-                            {field: 'fdata_proj_name', align:'center',title: '项目名称',width:300}
+                             {field: 'fdata_proj_name', align:'center',title: '项目名称',width:300}
                             ,{field: 'fdata_cjrpotdate', align:'center',title: '出具报告日期',width:150}
                             ,{field: 'fdata_report_type',align:'center',title: '报告类型',width:150}
                             ,{field: 'fdata_entrust',align:'center',title: '委托方',width:150}

@@ -16,12 +16,11 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 </head>
 <body>
 
-<div class="layadmin-user-login layadmin-user-display-show" id="LAY-user-login" style="background-color:rgb(27,109,193);display: none;">
-    <div class="layadmin-user-login-box layadmin-user-login-header">
-        <img src='./public/logo.fw.png'></img>
-    </div>
+<div class="layadmin-user-login layadmin-user-display-show" id="LAY-user-login" style="background:url('./public/logo.fw.png') no-repeat;background-size:100% 100%;display: none;">
+
+
     <div class="layadmin-user-login-main">
-        <div class="layadmin-user-login-box layadmin-user-login-body layui-form">
+        <div class="layadmin-user-login-box layadmin-user-login-body layui-form" style="margin-top: 220px">
             <div class="layui-form-item">
                 <label class="layadmin-user-login-icon layui-icon layui-icon-username" for="LAY-user-login-username"></label>
                 <input type="text" name="user_phone" id="LAY-user-login-username" lay-verify="required|phone" placeholder="手机号登陆" class="layui-input">

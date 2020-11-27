@@ -149,13 +149,8 @@ class Control_InvoiceVerify extends CI_Controller
             $limit=15;
         }
 
-
+        //合计开票明细查询条件
         if(count($search_val)>=1){
-
-            if($search_val['s_invoice_name']!="")
-            {
-                $like['fdata_invoice_name']=$search_val['s_invoice_name'];
-            }
             if(array_key_exists('fdata_total_flag',$search_val))
             {
                 if($search_val['fdata_total_flag']!="")
@@ -163,31 +158,41 @@ class Control_InvoiceVerify extends CI_Controller
                     $where['fdata_total_flag']=$search_val['fdata_total_flag'];
                 }
             }
+            //发票审核数据查询条件
+            else
+            {
+                if($search_val['s_invoice_name']!="")
+                {
+                    $like['fdata_invoice_name']=$search_val['s_invoice_name'];
+                }
+                if($search_val['s_repoid']!="")
+                {
+                    $where['fdata_repoid']=$search_val['s_repoid'];
+                }
+                if($search_val['kbdd']!="" && $search_val['kedd']!="")
+                {
+                    $where['fdata_invoice_date >']=$search_val['kbdd'];
+                    $where['fdata_invoice_date <']=$search_val['kedd'];
 
-            if($search_val['s_repoid']!="")
-            {
-                $where['fdata_repoid']=$search_val['s_repoid'];
-            }
-            if($search_val['kbdd']!="" && $search_val['kedd']!="")
-            {
-                $where['fdata_invoice_date >']=$search_val['kbdd'];
-                $where['fdata_invoice_date <']=$search_val['kedd'];
+                }
+                if($search_val['bdd']!="" && $search_val['edd']!="")
+                {
+                    $where['fdata_cjrpotdate >=']=$search_val['bdd'];
+                    $where['fdata_cjrpotdate <=']=$search_val['edd'];
+
+                }
+                if($search_val['fdata_jg_id']!="")
+                {
+                    $where['fdata_jg_id']=$search_val['fdata_jg_id'];
+                }
+                if($search_val['fdata_statue']!="")
+                {
+                    $where['fdata_statue']=$search_val['fdata_statue'];
+                }
 
             }
-            if($search_val['bdd']!="" && $search_val['edd']!="")
-            {
-                $where['fdata_cjrpotdate >=']=$search_val['bdd'];
-                $where['fdata_cjrpotdate <=']=$search_val['edd'];
 
-            }
-            if($search_val['fdata_jg_id']!="")
-            {
-                $where['fdata_jg_id']=$search_val['fdata_jg_id'];
-            }
-            if($search_val['fdata_statue']!="")
-            {
-                $where['fdata_statue']=$search_val['fdata_statue'];
-            }
+
 
 
         }

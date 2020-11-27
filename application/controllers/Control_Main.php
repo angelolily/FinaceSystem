@@ -13,15 +13,24 @@ class Control_Main extends CI_Controller {
     public function index()
     {
         $user_name = $this->session->userdata('c_EmName');
-        $user_type = $this->session->userdata('c_job');
+        $user_type = $this->session->userdata('c_invoice_job');
         if($user_name){
             $data['username']=$user_name;
+
+            if($user_type==1){
+                $data['url']=base_url('index.php/Control_invoiceApp');
+                $data['menu_name']="发票申请管理";
+
+            }
+            if($user_type==2){
+                $data['url']=base_url('index.php/Control_invoiceVerify');
+                $data['menu_name']="发票审核管理";
+            }
             if($user_type==3){
-                $this->load->view('view_main',$data);
+                $data['url']=base_url('index.php/Control_invoice');
+                $data['menu_name']="发票信息管理";
             }
-            else{
-                $this->load->view('view_main',$data);
-            }
+            $this->load->view('view_main',$data);
         }
 
     }

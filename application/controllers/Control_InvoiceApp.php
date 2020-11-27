@@ -17,7 +17,7 @@ class Control_InvoiceApp extends CI_Controller
 		$this->load->helper('url');
         $this->load->helper('tool');
         $this->load->model('Sys_Model');
-        $this->load->model('jko_Model');
+        $this->load->model('Jko_Model');
 	}
 	public function index()
 	{
@@ -29,11 +29,11 @@ class Control_InvoiceApp extends CI_Controller
 			$this->load->view('login');
 		}
        //获取已完成的报告编号
-        $rpoid_sql="select distinct c_rpoid,C_CJRPOTDATE,C_PROJNAME,C_ENTRUST,C_AMOUNT from jko_projinfotb where c_jgID='$jgID' and c_projstate='报告已完成'";
+        $rpoid_sql="select distinct c_rpoid,C_CJRPOTDATE,C_PROJNAME,C_ENTRUST,C_AMOUNT from jko_projinfotb where c_jgID='$jgID' and c_projstate='报告已完成'" ;
 
 
 
-        $data['rpoid']=$this->jko_Model->execute_sql($rpoid_sql);
+        $data['rpoid']=$this->Jko_Model->execute_sql($rpoid_sql);
 
 
         $data['account']=$this->Sys_Model->table_seleRow('account_tax_num,account_bank_phone,account_bank_name,account_bank_address,account_id,account_invoice_name','finance_enterprise_account',array('account_jg_id'=>$jgID));
@@ -140,10 +140,13 @@ class Control_InvoiceApp extends CI_Controller
 
             }
             $this->Sys_Model->table_addRow("finance_enterprise_account",$enterprise_data);
+            $this->Jko_Model->table_updateRow("jko_projinfotb",array('C_PZZT'=>"1"),array("C_RPOID"=>$val['fdata_repoid']));
             $db_result=$this->Sys_Model->table_addRow("finance_data",$finace_data);
             if($db_result>=0){
                 $result['code']=true;
                 $result['msg']='发票申请成功';
+
+
             }
             else{
                 $result['code']=false;
@@ -356,6 +359,20 @@ class Control_InvoiceApp extends CI_Controller
 
 
 
+    }
+
+
+    public function get_rpoid()
+    {
+        $result=array();
+        $jgID=$this->session->userdata('c_jgID');
+        //获取已完成的报告编号
+        $rpoid_sql="select distinct c_rpoid,C_CJRPOTDATE,C_PROJNAME,C_ENTRUST,C_AMOUNT from jko_projinfotb where c_jgID='$jgID' and c_projstate='报告已完成' and C_PZZT is null" ;
+        $result=$this->Jko_Model->execute_sql($rpoid_sql);
+
+        header("HTTP/1.1 201 Created");
+        header("Content-type: application/json");
+        echo json_encode($result);
     }
 
 

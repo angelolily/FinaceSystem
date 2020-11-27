@@ -54,6 +54,7 @@ class Control_Invoice extends CI_Controller
         $search_val=$this->input->GET('val');
 
 
+
         if(!($limit)){
             $limit=15;
         }
@@ -107,6 +108,59 @@ class Control_Invoice extends CI_Controller
 
         echo json_encode($items,true);
 
+
+
+    }
+
+    //excel输出
+    public function outexcel()
+    {
+        $where="1=1 ";
+        $like="";
+        $search_val=$this->input->GET('val');
+
+        if(count($search_val)>=1){
+
+            if($search_val['s_invoice_name']!="")
+            {
+                $like=" and s_invoice_name like '%{$search_val['s_invoice_name']}%'";
+            }
+            if($search_val['s_repoid']!="")
+            {
+                $where=$where." and fdata_repoid='{$search_val['s_repoid']}'";
+            }
+            if($search_val['fdata_statue']!="")
+            {
+                $where=$where." and fdata_statue='{$search_val['fdata_statue']}'";
+            }
+            if($search_val['kbdd']!="" && $search_val['kedd']!="")
+            {
+                $where=$where." and fdata_invoice_date>='{$search_val['kbdd']}' and fdata_invoice_date<='{$search_val['kedd']}'";
+
+            }
+            if($search_val['bdd']!="" && $search_val['edd']!="")
+            {
+                $where=$where." and fdata_cjrpotdate>='{$search_val['bdd']}' and fdata_cjrpotdate<='{$search_val['edd']}'";
+
+
+            }
+            if($search_val['fdata_jg_id']!="")
+            {
+                $where=$where." and fdata_jg_id='{$search_val['fdata_jg_id']}'";
+
+            }
+            if($search_val['invoice_money1']!="" && $search_val['invoice_money2']!="")
+            {
+                $where=$where." and fdata_invoice_money>='{$search_val['invoice_money1']}' and fdata_invoice_money<='{$search_val['invoice_money2']}'";
+
+
+            }
+
+        }
+
+
+        $items=$this->Sys_Model->output_excel($where,$like);
+        echo json_encode($items,true);
 
 
     }
@@ -178,6 +232,58 @@ class Control_Invoice extends CI_Controller
 
 
     }
+
+
+//    public function outExcel()
+//    {
+//        $excel_type=$this->input->GET('excel_type');//导出到excel的标识
+//        $search_val=$this->input->GET('val');
+//
+//        $where="1=1 ";
+//        $like="";
+//
+//        if(count($search_val)>=1){
+//
+//            if($search_val['s_invoice_name']!="")
+//            {
+//                $like=" and s_invoice_name like '%{$search_val['s_invoice_name']}%'";
+//            }
+//            if($search_val['s_repoid']!="")
+//            {
+//                $where=$where." and fdata_repoid='{$search_val['s_repoid']}'";
+//            }
+//            if($search_val['fdata_statue']!="")
+//            {
+//                $where=$where." and fdata_statue='{$search_val['fdata_statue']}'";
+//            }
+//            if($search_val['kbdd']!="" && $search_val['kedd']!="")
+//            {
+//                $where=$where." and fdata_invoice_date>='{$search_val['kbdd']}' and fdata_invoice_date<='{$search_val['kedd']}'";
+//
+//            }
+//            if($search_val['bdd']!="" && $search_val['edd']!="")
+//            {
+//                $where=$where." and fdata_cjrpotdate>='{$search_val['bdd']}' and fdata_cjrpotdate<='{$search_val['edd']}'";
+//
+//
+//            }
+//            if($search_val['fdata_jg_id']!="")
+//            {
+//                $where=$where." and fdata_jg_id='{$search_val['fdata_jg_id']}'";
+//
+//            }
+//            if($search_val['invoice_money1']!="" && $search_val['invoice_money2']!="")
+//            {
+//                $where=$where." and fdata_invoice_money>='{$search_val['invoice_money1']}' and fdata_invoice_money<='{$search_val['invoice_money2']}'";
+//
+//
+//            }
+//
+//        }
+//
+//
+//
+//    }
 
 
 

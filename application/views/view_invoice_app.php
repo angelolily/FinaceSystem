@@ -83,7 +83,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                     <div class="layui-input-inline">
                         <select id="fdata_statue" name="fdata_statue"   >
                             <option value="">请选择...</option>
-                            <option value="申请审核中">申请审核中</option>
+                            <option value="申请审核中">发票申请中</option>
                             <option value="开票中">开票中</option>
                             <option value="发票已寄出">发票已寄出</option>
                             <option value="已开票">已开票</option>
@@ -140,20 +140,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
         <div class="layui-input-inline" style="width: 30%;">
             <select id="fdata_repoid" name="fdata_repoid" lay-verify="required" lay-filter='fdata_repoid' lay-search >
                 <option value="">请选择...</option>
-                <?php
-                if ($rpoid) {
-                    foreach ($rpoid as $row) {
-                        ?>
-                        <option
-                                value="<?php echo $row['c_rpoid']; ?>"><?php echo $row['c_rpoid']; ?></option>
-                        <?php
-                    }
-                } else {
-                    ?>
-                    <option value="no">无任何报告编号</option>
-                    <?php
-                }
-                ?>
+
             </select>
         </div>
         <label class="layui-form-label layui-required">出具日期</label>
@@ -188,18 +175,18 @@ defined('BASEPATH') OR exit('No direct script access allowed');
         <div class="layui-input-inline" style="width: 30%;">
             <input type="text" name="fdata_entrust" id="fdata_entrust" lay-verify="required"   class="layui-input layui-disabled" >
         </div>
-        <label class="layui-form-label layui-required ">评估额</label>
+        <label class="layui-form-label layui-required ">评估额(万元)</label>
         <div class="layui-input-inline" style="width: 45%;">
             <input type="text" name="fdata_amount" id="fdata_amount" placeholder="万元"   lay-verify="required"   class="layui-input layui-disabled" >
         </div>
     </div>
 
     <div class="layui-form-item">
-        <label class="layui-form-label layui-required">应收评估费</label>
+        <label class="layui-form-label layui-required" >应收评估费(元)</label>
         <div class="layui-input-inline" style="width: 30%;">
             <input type="text" name="fdata_evaluation" id="fdata_evaluation" placeholder="元"   lay-verify="required"   class="layui-input" >
         </div>
-        <label class="layui-form-label layui-required">开票金额</label>
+        <label class="layui-form-label layui-required">开票金额(元)</label>
         <div class="layui-input-inline" style="width: 45%;">
             <input type="text" name="fdata_invoice_money" placeholder="元"   lay-verify="required"   class="layui-input" >
         </div>
@@ -208,8 +195,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
     <div class="layui-form-item">
         <label class="layui-form-label layui-required">发票类型</label>
         <div class="layui-input-inline" style="width: 30%;">
-            <input type="radio" name="fdata_invoice_type" value="1" title="普票">
-            <input type="radio" name="fdata_invoice_type" value="2" title="专票" checked>
+            <input type="radio" name="fdata_invoice_type" lay-filter='fdata_invoice_type' value="1" title="普票">
+            <input type="radio" name="fdata_invoice_type" lay-filter='fdata_invoice_type' value="2" title="专票" checked>
         </div>
         <label class="layui-form-label layui-required">开票名称</label>
         <div class="layui-input-inline" style="width: 45%;">
@@ -331,7 +318,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 <script>
 	var $ = layui.$;
 	var g_account=<?php echo json_encode($account); ?>; //开票信息
-	var g_proj=<?php echo json_encode($rpoid); ?>;//项目信息
+	var g_proj;//项目信息
 	var table = layui.table;
 	var form = layui.form;
 	var gb_index=5;//当前打开的dialog
@@ -415,6 +402,27 @@ defined('BASEPATH') OR exit('No direct script access allowed');
         var type = $(this).data('type');
         active[type] ? active[type].call(this) : '';
     });
+
+    //普票无需填写开户行地址等信息信息
+    form.on('radio(fdata_invoice_type)', function(data){
+            console.log(data.value); //被点击的radio的value值
+            if(data.value==1)//被点击的radio的value值
+            {
+                $("#fdata_bank").hide();
+                $("#fdata_bank_address").hide();
+                $("#fdata_bank_phone").hide();
+
+            }
+            else
+            {
+                $("#fdata_bank").show();
+                $("#fdata_bank_address").show();
+                $("#fdata_bank_phone").show();
+            }
+
+
+        });
+
 
     //跨页check后，记忆存储
     table.on('checkbox(finace_data_table)', function(obj){
@@ -594,6 +602,31 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                 $(this).val('');
             });
 
+            $.ajax({
+                type:'post',
+                url:'./Control_InvoiceApp/get_rpoid',
+                dataType:'json',
+                async : false,
+                success:function (result) {
+                    console.log(result);
+
+                    if(Array.isArray(result))
+                    {
+                        g_proj=result;
+                        $("#fdata_repoid").empty();
+                        $('#fdata_repoid').append(new Option("", "请选择...."));
+                        result.forEach(function (item){
+                            $('#fdata_repoid').append(new Option(item.c_rpoid, item.c_rpoid));// 下拉菜单里添加元素
+                        });
+                        layui.form.render("select");
+
+                    }
+
+
+                }
+
+            });
+
             layer.open({
                 type: 1
                 ,title: '申请发票'
@@ -622,6 +655,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                             dataType:'json',
                             async : false,
                             success:function (result) {
+                                console.log(result);
                                 if(result.code){
                                     layer.msg(result.msg, {icon: 6});
                                     finace_data_table.reload();//数据刷新
