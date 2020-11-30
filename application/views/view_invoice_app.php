@@ -21,6 +21,9 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 		top:14px;
 		right:5px;
 	}
+    .layui-form-label{
+        white-space:nowrap!important;
+    }
 </style>
 
 <body>
