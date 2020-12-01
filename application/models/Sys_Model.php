@@ -196,6 +196,20 @@ class Sys_Model extends CI_Model
 
     }
 
+
+    //执行纯SQL语句，返回数组
+    public function execute_sql($sql)
+    {
+
+        $query = $this->db->query($sql);
+        if($query){
+            return $query->result_array();
+        }
+        $ss=$this->db->last_query();
+        return array();
+
+    }
+
     //excel导出
     public function output_excel($wheredata,$likedata)
     {

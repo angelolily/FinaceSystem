@@ -43,7 +43,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                                 foreach ($rpoid as $row) {
                                     ?>
                                     <option
-                                            value="<?php echo $row['c_rpoid']; ?>"><?php echo $row['c_rpoid']; ?></option>
+                                            value="<?php echo $row['fdata_repoid']; ?>"><?php echo $row['fdata_repoid']; ?></option>
                                     <?php
                                 }
                             } else {
@@ -115,7 +115,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 			<!--表格按钮-->
 			<script type="text/html" id="table-useradmin-webuser">
-                {{#  if(d. fdata_statue== '发票申请中'){ }}
+                {{#  if(d. fdata_statue== '发票申请中' || d. fdata_statue== '申请驳回'){ }}
                 <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="cancel_app"><i class="layui-icon layui-icon-delete"></i>撤回申请</a>
                 {{#  } else if(d.fdata_statue== '已开票' || d.fdata_statue== '发票已寄出') { }}
                 <a class="layui-btn layui-btn-xs" lay-event="cancel_back"><i class="layui-icon layui-icon-delete"></i>退票/改开</a>
@@ -148,7 +148,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
         </div>
         <label class="layui-form-label layui-required">出具日期</label>
         <div class="layui-input-inline" style="width: 45%;">
-            <input type="text" name="fdata_cjrpotdate" id="fdata_cjrpotdate"  placeholder=""  class="layui-input layui-disabled" >
+            <input type="text" name="fdata_cjrpotdate" id="fdata_cjrpotdate"  placeholder=""  class="layui-input" readonly="true" >
         </div>
 	</div>
 
@@ -169,18 +169,18 @@ defined('BASEPATH') OR exit('No direct script access allowed');
         </div>
         <label class="layui-form-label layui-required">项目地址</label>
         <div class="layui-input-inline" style="width: 45%;">
-            <input type="text" name="fdata_proj_name" id="fdata_proj_name"   placeholder="输入房产证上详细地址信息" lay-verify="required"  autocomplete="off" class="layui-input layui-disabled" >
+            <input type="text" name="fdata_proj_name" id="fdata_proj_name"   placeholder="输入房产证上详细地址信息" lay-verify="required"  autocomplete="off" readonly="true" class="layui-input" >
         </div>
     </div>
 
     <div class="layui-form-item">
         <label class="layui-form-label layui-required">委托方</label>
         <div class="layui-input-inline" style="width: 30%;">
-            <input type="text" name="fdata_entrust" id="fdata_entrust" lay-verify="required"   class="layui-input layui-disabled" >
+            <input type="text" name="fdata_entrust" id="fdata_entrust" lay-verify="required"   class="layui-input" readonly="true" >
         </div>
         <label class="layui-form-label layui-required ">评估额(万元)</label>
         <div class="layui-input-inline" style="width: 45%;">
-            <input type="text" name="fdata_amount" id="fdata_amount" placeholder="万元"   lay-verify="required"   class="layui-input layui-disabled" >
+            <input type="text" name="fdata_amount" id="fdata_amount" placeholder="万元"   lay-verify="required"   class="layui-input" readonly="true" >
         </div>
     </div>
 
@@ -679,11 +679,28 @@ defined('BASEPATH') OR exit('No direct script access allowed');
         ,merge:function(){
 
             var checkStatus = table.checkStatus('finace_data'),data =checkStatus.data;
+            var flag=1;
             console.log(checkStatus);
             if (checkStatus.data.length<1){
                 layer.alert('请勾选要合并开票信息！');
                 return false;
             }
+            checkStatus.data.forEach(function(item){
+                console.log(item.fdata_statue);
+                if(item.fdata_statue!="发票申请中")
+                {
+
+                    flag= 0;
+                }
+            });
+
+            if(flag==0)
+            {
+                layer.alert('勾选的信息中有非发票申请状态的，请去除！');
+                return false;
+            }
+
+
             layer.msg("您要合并开票的项目数："+checkStatus.data.length+",合计开票金额："+gb_total_count+"元");
             $.ajax({
                 type:'post',
@@ -694,6 +711,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                 success:function (result) {
                     if(result.code){
                         layer.msg(result.msg, {icon: 6});
+                        checkedSet= new Set();
                         finace_data_table.reload();
                     }
                     else{
@@ -710,7 +728,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
     table.on('tool(finace_data_table)', function(obj){
         var selectrow =obj.data;
         if(obj.event === 'cancel_app'){
-            if(selectrow.fdata_statue=="发票申请中")
+            if(selectrow.fdata_statue=="发票申请中" || selectrow.fdata_statue=="申请驳回")
             {
                 layer.confirm('确定撤回该笔发票申请对吗', function(index){
                     //提交 Ajax 成功后，删除更新表格中的数据

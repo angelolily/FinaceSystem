@@ -29,9 +29,9 @@ class Control_InvoiceVerify extends CI_Controller
 			$this->load->view('login');
 		}
        //获取已完成的报告编号
-        $rpoid_sql="select distinct c_rpoid from jko_projinfotb where c_projstate='报告已完成'";
+        $rpoid_sql="select distinct fdata_repoid from finance_data";
 
-        $data['rpoid']=$this->jko_Model->execute_sql($rpoid_sql);
+       $data['rpoid']=$this->Sys_Model->execute_sql($rpoid_sql);
 
 
         $data['jgID']=$this->jko_Model->table_seleRow('c_jgID,c_jgName','jko_jggroup');
@@ -132,6 +132,41 @@ class Control_InvoiceVerify extends CI_Controller
 
     }
 
+    //获取报告路径
+    public function get_doc_path()
+    {
+        $result_projinfo=array();
+        $result=array();
+        $val=$this->input->POST('val');
+
+        if($val)
+        {
+            $result_projinfo=$this->jko_Model->table_seleRow("c_docpath,c_rpoid,c_jgID","jko_projinfotb",array('c_rpoid'=>$val['fdata_repoid']));
+            if(count($result_projinfo)>0)
+            {
+                $result['code']=true;
+                $result['msg']='数据查询成功';
+                $result['data']=$result_projinfo;
+
+            }
+            else
+            {
+                $result['code']=false;
+                $result['msg']='数据查询失败';
+                $result['data']='';
+
+            }
+
+        }
+        else
+        {
+            $result['code']=false;
+            $result['msg']='数据接收失败';
+            $result['data']='';
+
+        }
+        echo json_encode($result,true);
+    }
 
     //获取发票审核数据
     public function get_invoiceApp_data()

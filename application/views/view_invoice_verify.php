@@ -40,7 +40,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                                 foreach ($rpoid as $row) {
                                     ?>
                                     <option
-                                            value="<?php echo $row['c_rpoid']; ?>"><?php echo $row['c_rpoid']; ?></option>
+                                            value="<?php echo $row['fdata_repoid']; ?>"><?php echo $row['fdata_repoid']; ?></option>
                                     <?php
                                 }
                             } else {
@@ -136,7 +136,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
             <!--表格按钮-->
             <script type="text/html" id="table-useradmin-webuser">
-                <a class="layui-btn layui-btn-dange layui-btn-xs" lay-event="cancel_app"><i class="layui-icon layui-icon-file"></i>查看报告</a>
+                <a class="layui-btn layui-btn-dange layui-btn-xs" lay-event="showdoc"><i class="layui-icon layui-icon-file"></i>查看报告</a>
             </script>
             <script type="text/html" id="fdata_jg-Tpl">
                 {{#
@@ -343,6 +343,15 @@ defined('BASEPATH') OR exit('No direct script access allowed');
         //console.log(checkedSet);
     });
 
+    //打开word在线预览
+    function openWord(docpath){
+        var filedoc="https://view.officeapps.live.com/op/view.aspx?src=";
+        filepath=encodeURIComponent(docpath);
+        filedoc=filedoc+filepath;
+        windowOpen(filedoc, '_blank');
+
+    }
+
     //监听搜索
     form.on('submit(LAY-invoice-search)', function(data){
         var field = data.field;
@@ -512,42 +521,55 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
     };
 
+    //打开新链接方法实现
+    function windowOpen(url,target){
+        var a = document.createElement("a");
+        a.setAttribute("href", url);
+        if(target == null){
+            target = '';
+        }
+        a.setAttribute("target", target);
+        document.body.appendChild(a);
+        if(a.click){
+            a.click();
+        }else{
+            try{
+                var evt = document.createEvent('Event');
+                a.initEvent('click', true, true);
+                a.dispatchEvent(evt);
+            }catch(e){
+                window.open(url);
+            }
+        }
+        document.body.removeChild(a);
+    }
+
     //监听工具条
     table.on('tool(finace_data_table)', function(obj){
         var selectrow =obj.data;
-        if(obj.event === 'cancel_app'){
-            if(selectrow.fdata_statue=="发票申请中")
-            {
-                layer.confirm('确定撤回该笔发票申请对吗', function(index){
-                    //提交 Ajax 成功后，删除更新表格中的数据
+        console.log(selectrow);
+        if(obj.event === 'showdoc'){
+            $.ajax({
+                type:'post',
+                url:'./Control_InvoiceVerify/get_doc_path',
+                data:{val:selectrow},
+                dataType:'json',
+                async : false,
+                success:function (result) {
+                    if(result.code){
+                        layer.msg(result.msg, {icon: 6});
+                        console.log(result.data);
+                        var filepath="http://oa.fjspacecloud.com/JKOffice/uploads/"+result.data[0].c_jgID+"/"+result.data[0].c_rpoid+"/"+result.data[0].c_docpath;
+                        console.log(filepath);
 
-                    console.log(obj);
-                    $.ajax({
-                        type:'post',
-                        url:'./Control_InvoiceApp/cancel_invoice_app',
-                        data:{val:selectrow},
-                        dataType:'json',
-                        async : false,
-                        success:function (result) {
-                            if(result.code){
-                                layer.msg(result.msg, {icon: 6});
-                                finace_data_table.reload();//数据刷新
-                                layer.close(index);//关闭弹层
-                            }
-                            else{
-                                layer.msg(result.msg, {icon: 5});
-                                layer.close(index);//关闭弹层
-                            }
-                        }
+                        openWord(filepath);
+                    }
+                    else{
+                        layer.msg(result.msg, {icon: 5});
 
-                    });
-                });
-            }
-            else
-            {
-                layer.msg("状态必须是申请中，才可以撤回申请", {icon: 5});
-            }
-
+                    }
+                }
+            });
 
         }
     });
