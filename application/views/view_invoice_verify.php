@@ -105,7 +105,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                     <div class="layui-input-inline">
                         <select id="fdata_statue" name="fdata_statue"   >
                             <option value="">请选择...</option>
-                            <option value="申请审核中">申请审核中</option>
+                            <option value="申请审核中">发票申请中</option>
                             <option value="开票中">开票中</option>
                             <option value="发票已寄出">发票已寄出</option>
                             <option value="已开票">已开票</option>
@@ -282,10 +282,11 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			,{field: 'fdata_tax_num',align:'center',title: '税号',width:150}
 			,{field: 'fdata_bank_address',align:'center',title: '开户行地址',width:150}
             ,{field: 'fdata_bank_phone',align:'center',title: '开户行电话',width:150}
+            ,{field: 'fdata_bank_num',align:'center',title: '开户行账号',width:150}
             ,{field: 'fdata_invoice_emp',align:'center',title: '发票领用人',width:150}
-            ,{field: 'fdata_invoice_data',align:'center',title: '开票日期',width:150}
-            ,{field: 'fdata_money_data',align:'center',title: '收款日期',width:150}
-            ,{field: 'fdata_refund_data',align:'center',title: '退票日期',width:150}
+            ,{field: 'fdata_invoice_date',align:'center',title: '开票日期',width:150}
+            ,{field: 'fdata_money_date',align:'center',title: '收款日期',width:150}
+            ,{field: 'fdata_refund_date',align:'center',title: '退票日期',width:150}
             ,{field: 'fdata_rete',align:'center',title: '备注',width:250}
             ,{title: '操作', align:'center', fixed: 'right', toolbar: '#table-useradmin-webuser',width:100}
 		]]

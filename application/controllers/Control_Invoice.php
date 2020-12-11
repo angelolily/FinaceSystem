@@ -66,7 +66,7 @@ class Control_Invoice extends CI_Controller
 
             if($search_val['s_invoice_name']!="")
             {
-                $like=" and s_invoice_name like '%{$search_val['s_invoice_name']}%'";
+                $like=" and fdata_invoice_name like '%{$search_val['s_invoice_name']}%'";
             }
             if($search_val['s_repoid']!="")
             {

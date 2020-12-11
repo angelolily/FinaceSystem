@@ -2,7 +2,9 @@
 defined('BASEPATH') OR exit('No direct script access allowed');
 require_once 'vendor/autoload.php';
 
+
 //关联数组删除key
+
 function bykey_reitem($arr, $key){
     if(!array_key_exists($key, $arr)){
         return $arr;
@@ -17,6 +19,13 @@ function bykey_reitem($arr, $key){
 }
 
 
+/**
+ * Notes:
+ * User: Administrator
+ * DateTime: 2020/12/7 12:17
+ * @param int $fill_num
+ * @return array
+ */
 function test_Data_Fill($fill_num=1)
 {
     $faker = Faker\Factory::create('zh_CN');

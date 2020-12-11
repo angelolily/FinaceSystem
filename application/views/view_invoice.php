@@ -207,6 +207,18 @@ defined('BASEPATH') OR exit('No direct script access allowed');
         </div>
     </div>
     <div class="layui-form-item">
+        <label class="layui-form-label  layui-required">税额</label>
+        <div class="layui-input-inline">
+            <input type="text" name="fdata_tax_amount" id="fdata_tax_amount"   lay-verify="required" class="layui-input" >
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">开票金额</label>
+        <div class="layui-input-inline">
+            <input type="text"  name="fdata_invoice_money" id="fdata_invoice_money" readonly="true" class="layui-input" >
+        </div>
+    </div>
+    <div class="layui-form-item">
         <label class="layui-form-label layui-required">发票号</label>
         <div class="layui-input-inline">
             <input type="text"  name="fdata_invoice_num" id="fdata_invoice_num" lay-verify="required" class="layui-input" >
@@ -367,12 +379,13 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			,{field: 'fdata_statue',align:'center', rowspan: 2,title: '状态',width:150}
             ,{field: 'fdata_jg_id',align:'center',rowspan: 2, title: '业务机构',width:150,templet:'#fdata_jg-Tpl'}
             ,{field: 'fdata_emp',align:'center', rowspan: 2,title: '申请人',width:150}
+            ,{field: 'fdata_proj_name', align:'center',rowspan: 2,title: '项目名称',width:300}
             ,{field: 'fdata_total_flag',align:'center',rowspan: 2,title: '合计标识',width:150,sort:true}
             ,{field: 'fdata_total_money',align:'center',rowspan: 2,title: '合计开票金额',width:200}
             ,{field: 'fdata_amount',align:'center',rowspan: 2,title: '评估额',width:150}
             ,{field: 'fdata_evaluation',align:'center',rowspan: 2,title: '应收评估费',width:150}
 			,{field: 'fdata_repoid',align:'center', rowspan: 2,title: '报告编号',width:150}
-            ,{field: '', colspan: 6,align:'center',title: '开票信息',width:250}
+            ,{field: '', colspan: 8,align:'center',title: '开票信息',width:250}
             ,{field: '', colspan: 3,align:'center',title: '发票信息',width:350}
             ,{field: '', colspan: 4,align:'center',title: '日期信息',width:350}
             ,{field: '', colspan: 4,align:'center',title: '退票信息',width:350}
@@ -382,10 +395,12 @@ defined('BASEPATH') OR exit('No direct script access allowed');
             ,{title: '操作', align:'center', rowspan: 2,fixed: 'right', toolbar: '#table-useradmin-webuser',width:100}
 		],
             [{field: 'fdata_invoice_name',align:'center',title: '开票名称',width:200}
+            ,{field: 'fdata_bank',align:'center',title: '开户行名称',width:150}
             ,{field: 'fdata_invoice_money',align:'center',title: '开票金额',width:150}
             ,{field: 'fdata_tax_num',align:'center',title: '税号',width:150}
             ,{field: 'fdata_bank_address',align:'center',title: '开户行地址',width:150}
             ,{field: 'fdata_bank_phone',align:'center',title: '开户行电话',width:150}
+            ,{field: 'fdata_bank_num',align:'center',title: '开户行账号',width:150}
             ,{field: 'fdata_invoice_type',align:'center',title: '发票类型',width:150,templet:'#fdata_invoice_type-Tpl'}
                 ,{field: 'fdata_tax_rate',align:'center',rowspan: 2,title: '税率',width:150}
                 ,{field: 'fdata_tax_amount',align:'center',rowspan: 2,title: '税额',width:150}
@@ -400,6 +415,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                 ,{field: 'fdata_refund_verify',align:'center',rowspan: 2,title: '退改审核',width:150,templet:'#fdata_refund_verify-Tpl'}
                 ,{field: 'fdata_alter_money',align:'center',rowspan: 2,title: '改开金额',width:150}
                 ,{field: 'fdata_alter_rate',align:'center',rowspan: 2,title: '改开税率',width:150}
+
                 ,{field: 'fdata_alter_amount',align:'center',rowspan: 2,title: '改开税额',width:150}
                 ,{field: 'fdata_alter_invoice_num',align:'center',rowspan: 2,title: '改开发票号',width:150}
                 ,{field: 'fdata_alter_amount',align:'center',rowspan: 2,title: '改开税额',width:150}
@@ -519,6 +535,9 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                         $(this).val('');
                     });
 
+                }
+                ,success: function(layero, index){
+                   $('#fdata_invoice_money').val(checkStatus.data[0].fdata_invoice_money);
                 }
                 ,yes: function(index, layero){
                     var submit = $("#LAY-invoice-front-submit");
@@ -768,7 +787,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                         text: {
                             none: '空空如也'
                         },
-                        title: '作业信息',
+                        title: '合并明细开票信息',
                         toolbar:true,
                         page: {
                             layout: ['count', 'prev', 'page', 'next', 'limit', 'refresh', 'skip'],
@@ -777,11 +796,13 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                         },
                         cols: [[
                              {field: 'fdata_proj_name', align:'center',title: '项目名称',width:300}
+                            ,{field: 'fdata_invoice_money',align:'center',title: '开票金额(元)',width:150}
+                            ,{field: 'fdata_repoid',align:'center',title: '报告编号',width:150}
                             ,{field: 'fdata_cjrpotdate', align:'center',title: '出具报告日期',width:150}
                             ,{field: 'fdata_report_type',align:'center',title: '报告类型',width:150}
                             ,{field: 'fdata_entrust',align:'center',title: '委托方',width:150}
-                            ,{field: 'fdata_amount',align:'center',title: '评估额',width:150}
-                            ,{field: 'fdata_evaluation',align:'center',title: '评估费',width:150}
+                            ,{field: 'fdata_amount',align:'center',title: '评估额(万元)',width:150}
+                            ,{field: 'fdata_evaluation',align:'center',title: '应收评估费(元)',width:150}
                         ]],
 
                     });//表格

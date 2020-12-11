@@ -226,7 +226,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 
 	<div class="layui-form-item">
-		<label class="layui-form-label layui-required">税号</label>
+		<label class="layui-form-label">税号</label>
 		<div class="layui-input-inline" style="width: 30%;">
             <input type="text" name="fdata_tax_num" id="fdata_tax_num"  class="layui-input" >
 		</div>
@@ -245,9 +245,14 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			<input type="text" name="fdata_bank_address" id="fdata_bank_address"   class="layui-input" >
 		</div>
 	</div>
-
+    <div class="layui-form-item">
+        <label class="layui-form-label layui-required">开户行账号</label>
+        <div class="layui-input-inline" style="width: 30%;">
+            <input type="text" name="fdata_bank_num" id="fdata_bank_num" class="layui-input" >
+        </div>
+    </div>
 	<div class="layui-form-item layui-form-text">
-		<label class="layui-form-label">备注</label>
+		<label class="layui-form-label">发票内容备注</label>
 		<div class="layui-input-block">
 			<textarea name="fdata_rete" placeholder="" class="layui-textarea"></textarea>
 		</div>
@@ -281,8 +286,15 @@ defined('BASEPATH') OR exit('No direct script access allowed');
     </div>
     <div class="layui-form-item">
         <label class="layui-form-label layui-required">开户行</label>
-        <div class="layui-input-inline" style="width: 45%;">
+        <div class="layui-input-inline" >
             <input type="text" name="fdata_bank" id="fdata_bank" lay-verify="required"  class="layui-input" >
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label layui-required">开户行账号</label>
+        <div class="layui-input-inline" >
+            <input type="text" name="fdata_bank_num" id="fdata_bank_num" lay-verify="required"  class="layui-input" >
         </div>
     </div>
     <div class="layui-form-item">
@@ -383,13 +395,14 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			,{field: 'fdata_amount',align:'center',title: '评估额',width:150}
 			,{field: 'fdata_evaluation',align:'center',title: '评估费',width:150}
 			,{field: 'fdata_tax_num',align:'center',title: '税号',width:150}
-			,{field: 'fdata_bank_address',align:'center',title: '开户行地址',width:150}
+            ,{field: 'fdata_bank_address',align:'center',title: '开户行地址',width:150}
+			,{field: 'fdata_bank_num',align:'center',title: '开户行账号',width:150}
             ,{field: 'fdata_bank_phone',align:'center',title: '开户行电话',width:150}
             ,{field: 'fdata_bank',align:'center',title: '开户行',width:150}
             ,{field: 'fdata_invoice_emp',align:'center',title: '发票领用人',width:150}
-            ,{field: 'fdata_invoice_data',align:'center',title: '开票日期',width:150}
-            ,{field: 'fdata_money_data',align:'center',title: '收款日期',width:150}
-            ,{field: 'fdata_refund_data',align:'center',title: '退票日期',width:150}
+            ,{field: 'fdata_invoice_date',align:'center',title: '开票日期',width:150}
+            ,{field: 'fdata_money_date',align:'center',title: '收款日期',width:150}
+            ,{field: 'fdata_refund_date',align:'center',title: '退票日期',width:150}
             ,{field: 'fdata_refund_reason',align:'center',title: '退改理由',width:250}
             ,{field: 'fdata_rete',align:'center',title: '备注',width:250}
             ,{title: '操作', align:'center', fixed: 'right', toolbar: '#table-useradmin-webuser',width:100}
@@ -414,6 +427,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                 $("#fdata_bank").hide();
                 $("#fdata_bank_address").hide();
                 $("#fdata_bank_phone").hide();
+                $("#fdata_bank_num").hide();
 
             }
             else
@@ -421,6 +435,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                 $("#fdata_bank").show();
                 $("#fdata_bank_address").show();
                 $("#fdata_bank_phone").show();
+                $("#fdata_bank_num").show();
             }
 
 
@@ -481,6 +496,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
             $("#fdata_bank").val('');
             $("#fdata_bank_phone").val('');
             $("#fdata_bank_address").val('');
+            $("#fdata_bank_num").val('');
 
         }
         else
@@ -497,6 +513,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                             $("#fdata_bank").val(val.account_bank_name);
                             $("#fdata_bank_phone").val(val.account_bank_phone);
                             $("#fdata_bank_address").val(val.account_bank_address);
+                            $("#fdata_bank_num").val(val.account_bank_num);
 
                         }
 
@@ -700,7 +717,6 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                 return false;
             }
 
-
             layer.msg("您要合并开票的项目数："+checkStatus.data.length+",合计开票金额："+gb_total_count+"元");
             $.ajax({
                 type:'post',
@@ -712,6 +728,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                     if(result.code){
                         layer.msg(result.msg, {icon: 6});
                         checkedSet= new Set();
+                        gb_total_count=0;
                         finace_data_table.reload();
                     }
                     else{

@@ -31,7 +31,7 @@ class Control_InvoiceApp extends CI_Controller
             $this->load->view('login');
         }
         //获取已完成的报告编号
-        $rpoid_sql="select distinct fdata_repoid from finance_data";
+        $rpoid_sql="select distinct fdata_repoid from finance_data where fdata_jg_id='$jgID'";
 
         $data['rpoid']=$this->Sys_Model->execute_sql($rpoid_sql);
 
@@ -115,6 +115,7 @@ class Control_InvoiceApp extends CI_Controller
             $enterprise_data['account_invoice_name'] = $val['fdata_invoice_name'];
             $enterprise_data['account_create_by'] = $this->session->userdata('c_EmName');
             $enterprise_data['account_create_time'] = date('Y-m-d H:i:s');
+            $enterprise_data['account_bank_num'] = $val['fdata_bank_num'];
 
             //填充财务数据表
             $finace_data = bykey_reitem($val, "invoice_name");
@@ -238,7 +239,14 @@ class Control_InvoiceApp extends CI_Controller
 
     }
 
-    //取消申请
+
+
+    /**
+     * Notes:取消申请
+     * User: Administrator
+     * DateTime: 2020/12/7 12:19
+     * @return bool
+     */
     public function cancel_invoice_app()
     {
         $result = array();
