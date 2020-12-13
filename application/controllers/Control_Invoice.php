@@ -165,17 +165,38 @@ class Control_Invoice extends CI_Controller
 
     }
 
+    //释放退票的报告编号
+    private function freed($repoid){
+
+        $betch_data=array();
+
+        if(count($repoid)>=1)
+        {
+            foreach ($repoid as $row)
+            {
+                $tmp_row['C_PZZT']=0;
+                $tmp_row['c_rpoid']=$row['fdata_repoid'];
+                array_push($betch_data,$tmp_row);
+            }
+
+        }
+        $result_update_betch=$this->jko_Model->table_updateBatchRow('jko_projinfotb',$betch_data,'c_rpoid');
+        return $result_update_betch;
+
+
+    }
 
 
 
     //发票信息填写修改
     public function invoice_info_update()
     {
-        $sqls=[];
+
         $result=array();
         $val=$this->input->post('val');
         $fdata=$this->input->post('fdata');
         $type=$this->input->post('type');
+        $repoid=array();//退改成功后，要释放的报告编号
 
         if($val && $fdata)
         {
@@ -183,6 +204,7 @@ class Control_Invoice extends CI_Controller
             if($fdata[0]['fdata_total_flag']!="")
             {
                 $where['fdata_total_flag']=$fdata[0]['fdata_total_flag'];
+
             }
             else
             {
@@ -192,21 +214,23 @@ class Control_Invoice extends CI_Controller
             switch ($type)
             {
                 case 1:$val['fdata_statue']="已开票";$val['fdata_finace_emp']=$this->session->userdata('c_EmName');break;
-                case 2:$val['fdata_statue']="已退票";$val['fdata_finace_emp']=$this->session->userdata('c_EmName');break;
+                case 2:$val['fdata_statue']="已退票";
+                       $val['fdata_finace_emp']=$this->session->userdata('c_EmName');
+                       $repoid=$this->Sys_Model->table_seleRow('fdata_repoid','finance_data',$where);
+                       $this->freed($repoid);
+                       break;
                 case 3:$val['fdata_statue']="改开票";$val['fdata_finace_emp']=$this->session->userdata('c_EmName');break;
                 case 4:$val['fdata_statue']="申请退改";break;
+
             }
-
-
 
             $result_update=$this->Sys_Model->table_updateRow("finance_data",$val,$where);
 
-
-            if($result_update)
+            if($result_update>=0)
             {
-
                 $result['code']=true;
                 $result['msg']='发票信息更新成功';
+
             }
             else
             {
