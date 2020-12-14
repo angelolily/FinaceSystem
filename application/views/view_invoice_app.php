@@ -109,6 +109,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			<div style="padding-bottom: 10px;">
 				<button class="layui-btn layuiadmin-btn-admin layui-btn-normal" style="background-color: rgb(130,57,53)" data-type="add">发票申请</button>
 				<button class="layui-btn layuiadmin-btn-admin layui-btn-normal" style="background-color: rgb(64,116,52)" data-type="merge">合并开票</button>
+                <button class="layui-btn layuiadmin-btn-admin layui-btn-normal" style="background-color: rgb(20,68,106)" data-type="refund">退票重新申请</button>
 			</div>
 			<!--数据表格-->
 			<table id="finace_data_table" lay-filter="finace_data_table"></table>
@@ -254,9 +255,15 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 	<div class="layui-form-item layui-form-text">
 		<label class="layui-form-label">发票内容备注</label>
 		<div class="layui-input-block">
-			<textarea name="fdata_rete" placeholder="" class="layui-textarea"></textarea>
+			<textarea name="fdata_invoice_rate" placeholder="" class="layui-textarea"></textarea>
 		</div>
 	</div>
+    <div class="layui-form-item layui-form-text">
+        <label class="layui-form-label">普通备注</label>
+        <div class="layui-input-block">
+            <textarea name="fdata_rete" placeholder="" class="layui-textarea"></textarea>
+        </div>
+    </div>
 	<div class="layui-form-item layui-hide">
 		<input type="button" lay-submit lay-filter="LAY-invoice-front-submit" id="LAY-invoice-front-submit" value="确认提交">
 	</div>
@@ -404,6 +411,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
             ,{field: 'fdata_money_date',align:'center',title: '收款日期',width:150}
             ,{field: 'fdata_refund_date',align:'center',title: '退票日期',width:150}
             ,{field: 'fdata_refund_reason',align:'center',title: '退改理由',width:250}
+            ,{field: 'fdata_invoice_rate',align:'center',title: '发票备注',width:250}
             ,{field: 'fdata_rete',align:'center',title: '备注',width:250}
             ,{title: '操作', align:'center', fixed: 'right', toolbar: '#table-useradmin-webuser',width:100}
 		]]
@@ -692,6 +700,48 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                     submit.trigger('click');
                 }
             });
+        }
+        ,refund:function (){
+            var checkStatus = table.checkStatus('finace_data'),data =checkStatus.data;
+            var flag=1;
+            console.log(checkStatus);
+            if (checkStatus.data.length<1){
+                layer.alert('请勾选要重新开票信息！');
+                return false;
+            }
+            checkStatus.data.forEach(function(item){
+                console.log(item.fdata_statue);
+                if(item.fdata_statue!="已退票")
+                {
+                    layer.alert('勾选的信息必须是已退票状态！');
+                    flag=0;
+
+                }
+            });
+            if(flag==1)
+            {
+                $.ajax({
+                    type:'post',
+                    url:'./Control_InvoiceApp/refund_invoice_free',
+                    data:{val:checkStatus.data},
+                    dataType:'json',
+                    async : false,
+                    success:function (result) {
+                        if(result.code){
+                            layer.msg(result.msg, {icon: 6});
+                            checkedSet= new Set();
+                            gb_total_count=0;
+                            finace_data_table.reload();
+                        }
+                        else{
+                            layer.msg(result.msg, {icon: 5});
+
+                        }
+                    }
+                });
+            }
+
+
         }
         ,merge:function(){
 

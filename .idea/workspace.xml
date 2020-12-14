@@ -2,12 +2,11 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="5e1f4d4a-7c0a-46cf-bdd1-6aab1c8b35fd" name="默认的" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/FinaceSystem.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/FinaceSystem.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/php.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/php.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/application/controllers/Control_Invoice.php" beforeDir="false" afterPath="$PROJECT_DIR$/application/controllers/Control_Invoice.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/application/controllers/Control_Login.php" beforeDir="false" afterPath="$PROJECT_DIR$/application/controllers/Control_Login.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/application/models/Jko_Model.php" beforeDir="false" afterPath="$PROJECT_DIR$/application/models/Jko_Model.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/application/controllers/Control_InvoiceApp.php" beforeDir="false" afterPath="$PROJECT_DIR$/application/controllers/Control_InvoiceApp.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/application/models/Sys_Model.php" beforeDir="false" afterPath="$PROJECT_DIR$/application/models/Sys_Model.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/application/views/view_invoice_app.php" beforeDir="false" afterPath="$PROJECT_DIR$/application/views/view_invoice_app.php" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -64,10 +63,10 @@
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="com.intellij.ide.scratch.LRUPopupBuilder$1/新建草稿文件" value="PHP" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/application/controllers/testclass" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/../hty_work" />
     <property name="nodejs_interpreter_path.stuck_in_default_project" value="undefined stuck path" />
     <property name="nodejs_npm_path_reset_for_default_project" value="true" />
-    <property name="settings.editor.selected.configurable" value="preferences.pluginManager" />
+    <property name="settings.editor.selected.configurable" value="reference.settings.php.debug.xdebug.proxy" />
     <property name="vue.rearranger.settings.migration" value="true" />
   </component>
   <component name="RecentsManager">
@@ -138,6 +137,11 @@
       <workItem from="1607677289334" duration="1180000" />
       <workItem from="1607743812848" duration="2403000" />
       <workItem from="1607863932263" duration="5369000" />
+      <workItem from="1607910874599" duration="1629000" />
+      <workItem from="1607913778262" duration="4152000" />
+      <workItem from="1607929402762" duration="409000" />
+      <workItem from="1607929895881" duration="296000" />
+      <workItem from="1607930945881" duration="5134000" />
     </task>
     <task id="LOCAL-00001" summary="修改退票成功后，原发票编号要释放，使得申请人可以再次申请。">
       <created>1607868823537</created>
@@ -156,5 +160,20 @@
     <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
     <MESSAGE value="修改退票成功后，原发票编号要释放，使得申请人可以再次申请。" />
     <option name="LAST_COMMIT_MESSAGE" value="修改退票成功后，原发票编号要释放，使得申请人可以再次申请。" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="php">
+          <url>file://$PROJECT_DIR$/application/controllers/Control_InvoiceApp.php</url>
+          <line>354</line>
+          <option name="timeStamp" value="2" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
+  </component>
+  <component name="XSLT-Support.FileAssociations.UIState">
+    <expand />
+    <select />
   </component>
 </project>

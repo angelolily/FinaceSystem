@@ -18,7 +18,7 @@ class Sys_Model extends CI_Model
 
         $offset=($pages-1)*$rows;//计算偏移量
         $data = array();
-        $this->db->select('SQL_CALC_FOUND_ROWS fdata_bank_num,fdata_num,fdata_id,fdata_total_flag,fdata_statue,fdata_total_money,
+        $this->db->select('SQL_CALC_FOUND_ROWS fdata_invoice_rate,fdata_bank_num,fdata_num,fdata_id,fdata_total_flag,fdata_statue,fdata_total_money,
                            fdata_repoid,fdata_proj_name,fdata_invoice_name,fdata_invoice_money,
                            fdata_invoice_type,fdata_express_company,fdata_express_date,fdata_jg_id,fdata_emp,
                            fdata_express_num,fdata_cjrpotdate,fdata_report_type,fdata_entrust,

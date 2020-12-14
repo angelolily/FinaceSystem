@@ -36,7 +36,7 @@ class Control_InvoiceApp extends CI_Controller
         $data['rpoid']=$this->Sys_Model->execute_sql($rpoid_sql);
 
 
-        $data['account'] = $this->Sys_Model->table_seleRow('account_tax_num,account_bank_phone,account_bank_name,account_bank_address,account_id,account_invoice_name', 'finance_enterprise_account', array('account_jg_id' => $jgID));
+        $data['account'] = $this->Sys_Model->table_seleRow('account_tax_num,account_bank_phone,account_bank_name,account_bank_address,account_id,account_invoice_name,account_bank_num', 'finance_enterprise_account', array('account_jg_id' => $jgID));
 
         $this->load->view('view_invoice_app', $data);
 
@@ -347,6 +347,54 @@ class Control_InvoiceApp extends CI_Controller
         header("Content-type: application/json");
         echo json_encode($result);
     }
+
+    //发票退改后，重新申请。
+    public function refund_invoice_free()
+    {
+
+        $upl_val= [];
+        $where_data= [];
+        $result= [];
+        $val = $this->input->post('val');
+        if(is_array($val) && count($val)>0)
+        {
+            //如果是合计开票，重新申请后，需要将合并开票解散，合计金额清零
+            if ($val[0]['fdata_total_flag'] <> "") {
+                $upl_val['fdata_total_money']="";
+                $upl_val['fdata_total_flag']="";
+
+                $where_data['fdata_total_flag']=$val[0]['fdata_total_flag'];
+            }
+            else
+            {
+                $where_data['fdata_num']=$val['fdata_num'];
+
+            }
+            $upl_val['fdata_statue']="发票申请中";
+            $result_upd = $this->Sys_Model->table_updateRow("finance_data", $upl_val, $where_data);
+            if ($result_upd >= 0) {
+                $result['code'] = true;
+                $result['msg'] = '操作成功';
+
+            }
+            else{
+                $result['code'] = false;
+                $result['msg'] = '操作失败';
+            }
+
+
+
+        }
+        else{
+            $result['code'] = false;
+            $result['msg'] = '数据获取失败';
+        }
+        header("HTTP/1.1 201 Created");
+        header("Content-type: application/json");
+        echo json_encode($result);
+
+    }
+
 
 
 }
