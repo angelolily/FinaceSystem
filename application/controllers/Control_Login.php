@@ -1,6 +1,7 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 
+
 class Control_Login extends CI_Controller {
 
 	/**
@@ -25,6 +26,7 @@ class Control_Login extends CI_Controller {
         $this->load->library('session');
         $this->load->model('jko_Model');
         $this->load->library('encrypt');
+
 
     }
 	public function index()

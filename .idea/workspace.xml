@@ -2,16 +2,12 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="5e1f4d4a-7c0a-46cf-bdd1-6aab1c8b35fd" name="默认的" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/dataSources/5e9ac0cc-b27e-4820-a158-f6e061a966dc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources/5e9ac0cc-b27e-4820-a158-f6e061a966dc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/FinaceSystem.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/FinaceSystem.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/php.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/php.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/application/controllers/Control_Invoice.php" beforeDir="false" afterPath="$PROJECT_DIR$/application/controllers/Control_Invoice.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/application/controllers/Control_InvoiceApp.php" beforeDir="false" afterPath="$PROJECT_DIR$/application/controllers/Control_InvoiceApp.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/application/controllers/Control_Main.php" beforeDir="false" afterPath="$PROJECT_DIR$/application/controllers/Control_Main.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/application/helpers/tool_helper.php" beforeDir="false" afterPath="$PROJECT_DIR$/application/helpers/tool_helper.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/application/models/Sys_Model.php" beforeDir="false" afterPath="$PROJECT_DIR$/application/models/Sys_Model.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/application/views/view_invoice.php" beforeDir="false" afterPath="$PROJECT_DIR$/application/views/view_invoice.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/application/views/view_invoice_app.php" beforeDir="false" afterPath="$PROJECT_DIR$/application/views/view_invoice_app.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/application/views/view_invoice_verify.php" beforeDir="false" afterPath="$PROJECT_DIR$/application/views/view_invoice_verify.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/application/controllers/Control_Login.php" beforeDir="false" afterPath="$PROJECT_DIR$/application/controllers/Control_Login.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/application/models/Jko_Model.php" beforeDir="false" afterPath="$PROJECT_DIR$/application/models/Jko_Model.php" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -34,12 +30,21 @@
           <mapping local-root="$PROJECT_DIR$" remote-root="D:/phpStudy/PHPTutorial/WWW/phpMyAdmin" />
         </path_mappings>
       </server>
+      <server host="finacesystem.test" id="cc43b705-e84b-4b4a-90b6-e0d0b39706f6" name="finacesystem.test" use_path_mappings="true">
+        <path_mappings>
+          <mapping local-root="$PROJECT_DIR$" remote-root="D:/phpStudy/PHPTutorial/WWW" />
+        </path_mappings>
+      </server>
     </servers>
   </component>
   <component name="PhpWorkspaceProjectConfiguration">
     <include_path>
       <path value="$PROJECT_DIR$/vendor/composer" />
       <path value="$PROJECT_DIR$/vendor/fzaninotto/faker" />
+      <path value="$PROJECT_DIR$/vendor/markbaker/matrix" />
+      <path value="$PROJECT_DIR$/vendor/markbaker/complex" />
+      <path value="$PROJECT_DIR$/vendor/phpoffice/phpspreadsheet" />
+      <path value="$PROJECT_DIR$/vendor/psr/simple-cache" />
     </include_path>
   </component>
   <component name="PhpXdebugProxy" ide_key="PHPSTORM1" host="localhost" port="802" />
@@ -59,21 +64,22 @@
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="com.intellij.ide.scratch.LRUPopupBuilder$1/新建草稿文件" value="PHP" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/../JKOffice" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/application/controllers/testclass" />
     <property name="nodejs_interpreter_path.stuck_in_default_project" value="undefined stuck path" />
     <property name="nodejs_npm_path_reset_for_default_project" value="true" />
     <property name="settings.editor.selected.configurable" value="preferences.pluginManager" />
     <property name="vue.rearranger.settings.migration" value="true" />
   </component>
   <component name="RecentsManager">
-    <key name="MoveFile.RECENT_KEYS">
-      <recent name="D:\phpStudy\PHPTutorial\WWW\FinaceSystem\application\views" />
-    </key>
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="D:\phpStudy\PHPTutorial\WWW\FinaceSystem\application\controllers\testclass" />
       <recent name="D:\phpStudy\PHPTutorial\WWW\FinaceSystem\application\controllers" />
       <recent name="D:\phpStudy\PHPTutorial\WWW\FinaceSystem\application\views" />
       <recent name="D:\phpStudy\PHPTutorial\WWW\FinaceSystem\public" />
       <recent name="D:\phpStudy\PHPTutorial\WWW\FinaceSystem\application\models" />
+    </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="D:\phpStudy\PHPTutorial\WWW\FinaceSystem\application\views" />
     </key>
   </component>
   <component name="RunManager">
@@ -129,7 +135,18 @@
       <workItem from="1607409688614" duration="887000" />
       <workItem from="1607563121290" duration="3960000" />
       <workItem from="1607651423312" duration="1814000" />
+      <workItem from="1607677289334" duration="1180000" />
+      <workItem from="1607743812848" duration="2403000" />
+      <workItem from="1607863932263" duration="5369000" />
     </task>
+    <task id="LOCAL-00001" summary="修改退票成功后，原发票编号要释放，使得申请人可以再次申请。">
+      <created>1607868823537</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1607868823537</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -137,5 +154,7 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
+    <MESSAGE value="修改退票成功后，原发票编号要释放，使得申请人可以再次申请。" />
+    <option name="LAST_COMMIT_MESSAGE" value="修改退票成功后，原发票编号要释放，使得申请人可以再次申请。" />
   </component>
 </project>

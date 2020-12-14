@@ -113,4 +113,13 @@ class Jko_Model extends CI_Model
 
     }
 
+    //批量修改记录
+    public function table_updateBatchRow($taname,$values,$wherekey){
+
+        $result =$this->db->update_batch($taname, $values, $wherekey);
+        $ss=$this->db->last_query();
+        return $result;
+
+    }
+
 }

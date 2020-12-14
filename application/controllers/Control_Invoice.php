@@ -168,19 +168,15 @@ class Control_Invoice extends CI_Controller
     //释放退票的报告编号
     private function freed($repoid){
 
-        $betch_data=array();
-
         if(count($repoid)>=1)
         {
             foreach ($repoid as $row)
             {
-                $tmp_row['C_PZZT']=0;
-                $tmp_row['c_rpoid']=$row['fdata_repoid'];
-                array_push($betch_data,$tmp_row);
+                $result_update_betch.=$this->jko_Model->table_updateRow('jko_projinfotb',array('C_PZZT'=>"0"),array('c_rpoid'=>$row['fdata_repoid']));
+
             }
 
         }
-        $result_update_betch=$this->jko_Model->table_updateBatchRow('jko_projinfotb',$betch_data,'c_rpoid');
         return $result_update_betch;
 
 
