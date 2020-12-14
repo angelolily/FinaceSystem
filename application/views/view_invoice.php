@@ -207,12 +207,6 @@ defined('BASEPATH') OR exit('No direct script access allowed');
         </div>
     </div>
     <div class="layui-form-item">
-        <label class="layui-form-label  layui-required">税额</label>
-        <div class="layui-input-inline">
-            <input type="text" name="fdata_tax_amount" id="fdata_tax_amount"   lay-verify="required" class="layui-input" >
-        </div>
-    </div>
-    <div class="layui-form-item">
         <label class="layui-form-label">开票金额</label>
         <div class="layui-input-inline">
             <input type="text"  name="fdata_invoice_money" id="fdata_invoice_money" readonly="true" class="layui-input" >
