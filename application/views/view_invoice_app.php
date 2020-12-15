@@ -86,7 +86,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                     <div class="layui-input-inline">
                         <select id="fdata_statue" name="fdata_statue"   >
                             <option value="">请选择...</option>
-                            <option value="申请审核中">发票申请中</option>
+                            <option value="发票申请中">发票申请中</option>
                             <option value="开票中">开票中</option>
                             <option value="发票已寄出">发票已寄出</option>
                             <option value="已开票">已开票</option>
@@ -753,10 +753,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                 return false;
             }
             checkStatus.data.forEach(function(item){
-                console.log(item.fdata_statue);
                 if(item.fdata_statue!="发票申请中")
                 {
-
                     flag= 0;
                 }
             });
@@ -767,11 +765,15 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                 return false;
             }
 
-            layer.msg("您要合并开票的项目数："+checkStatus.data.length+",合计开票金额："+gb_total_count+"元");
+            layer.msg("您要合并开票的项目数："+checkStatus.size+",合计开票金额："+gb_total_count+"元");
+            console.log(checkedSet);
+            const items = checkedSet;
+            const value_array = Array.from(items);
+            console.log(value_array);
             $.ajax({
                 type:'post',
                 url:'./Control_InvoiceApp/merge_invoice_info',
-                data:{val:checkStatus,money:gb_total_count},
+                data:{val:value_array,money:gb_total_count},
                 dataType:'json',
                 async : false,
                 success:function (result) {

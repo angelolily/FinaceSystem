@@ -304,9 +304,9 @@ class Control_InvoiceApp extends CI_Controller
         $money = $this->input->post('money');
         if (is_array($val)) {
             $fdata_total_flag = time();
-            foreach ($val['data'] as $row) {
+            foreach ($val as $row) {
 
-                $up_sql = "update finance_data set fdata_total_flag='" . $fdata_total_flag . "',fdata_total_money='" . $money . "' where fdata_num='" . $row['fdata_num'] . "'";
+                $up_sql = "update finance_data set fdata_total_flag='" . $fdata_total_flag . "',fdata_total_money='" . $money . "' where fdata_num='" . $row . "'";
                 array_push($sqls, $up_sql);
             }
 

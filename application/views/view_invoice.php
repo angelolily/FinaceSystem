@@ -396,6 +396,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
             ,{field: 'fdata_bank_phone',align:'center',title: '开户行电话',width:150}
             ,{field: 'fdata_bank_num',align:'center',title: '开户行账号',width:150}
             ,{field: 'fdata_invoice_type',align:'center',title: '发票类型',width:150,templet:'#fdata_invoice_type-Tpl'}
+            ,{field: 'fdata_invoice_rate',align:'center',title: '开票备注',width:150}
                 ,{field: 'fdata_tax_rate',align:'center',rowspan: 2,title: '税率',width:150}
                 ,{field: 'fdata_tax_amount',align:'center',rowspan: 2,title: '税额',width:150}
                 ,{field: 'fdata_invoice_num',align:'center',rowspan: 2,title: '发票号',width:150}

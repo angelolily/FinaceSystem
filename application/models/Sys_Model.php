@@ -50,7 +50,7 @@ class Sys_Model extends CI_Model
 
         $offset=($pages-1)*$rows;//计算偏移量
         $data = array();
-        $field='SQL_CALC_FOUND_ROWS fdata_bank,fdata_bank_num,fdata_proj_name,fdata_tax_rate,fdata_tax_amount,fdata_invoice_num,fdata_num,fdata_id,fdata_total_flag,fdata_statue,fdata_total_money,
+        $field='SQL_CALC_FOUND_ROWS fdata_invoice_rate,fdata_bank,fdata_bank_num,fdata_proj_name,fdata_tax_rate,fdata_tax_amount,fdata_invoice_num,fdata_num,fdata_id,fdata_total_flag,fdata_statue,fdata_total_money,
                            fdata_repoid,fdata_invoice_name,fdata_invoice_money,fdata_refund_verify,fdata_emp,fdata_jg_id,
                            fdata_invoice_type,fdata_report_type,fdata_alter_date,fdata_alter_money,
                            fdata_alter_rate,fdata_alter_amount,fdata_alter_invoice_num,fdata_rad_num,
