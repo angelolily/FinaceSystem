@@ -765,32 +765,42 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                 return false;
             }
 
-            layer.msg("您要合并开票的项目数："+checkStatus.size+",合计开票金额："+gb_total_count+"元");
-            console.log(checkedSet);
-            const items = checkedSet;
-            const value_array = Array.from(items);
-            console.log(value_array);
-            $.ajax({
-                type:'post',
-                url:'./Control_InvoiceApp/merge_invoice_info',
-                data:{val:value_array,money:gb_total_count},
-                dataType:'json',
-                async : false,
-                success:function (result) {
-                    if(result.code){
-                        layer.msg(result.msg, {icon: 6});
-                        checkedSet= new Set();
-                        gb_total_count=0;
-                        finace_data_table.reload();
-                    }
-                    else{
-                        layer.msg(result.msg, {icon: 5});
 
+            var confirmMsg="请确认您要合并开票的项目数："+checkedSet.size+",合计开票金额："+gb_total_count+"元";
+            layer.confirm(confirmMsg, {icon: 3, title:'提示'}, function(index){
+                //do something
+                layer.close(index);
+                console.log(checkedSet);
+                const items = checkedSet;
+                const value_array = Array.from(items);
+                console.log(value_array);
+                $.ajax({
+                    type:'post',
+                    url:'./Control_InvoiceApp/merge_invoice_info',
+                    data:{val:value_array,money:gb_total_count},
+                    dataType:'json',
+                    async : false,
+                    success:function (result) {
+                        if(result.code){
+                            layer.msg(result.msg, {icon: 6});
+                            checkedSet= new Set();
+                            gb_total_count=0;
+                            finace_data_table.reload();
+                        }
+                        else{
+                            layer.msg(result.msg, {icon: 5});
+
+                        }
                     }
-                }
+                });
+
             });
-
         }
+
+
+
+
+
     };
 
     //监听工具条
