@@ -91,6 +91,16 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                     </div>
                 </div>
                 <div class="layui-inline">
+                    <label class="layui-form-label" style="width: 100px">合计开票金额</label>
+                    <div class="layui-input-inline" >
+                        <input type="text" id="fdata_total_money1" name="fdata_total_money1"  class="layui-input">
+                    </div>
+                    <label class="layui-input-inline">-</label>
+                    <div class="layui-input-inline">
+                        <input type="text" id="fdata_total_money2" name="fdata_total_money2"  class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-inline">
                     <label class="layui-form-label" style="width: 100px">报告出具时间</label>
                     <div class="layui-input-inline" >
                         <input type="text" id="bdd" name="bdd"  class="layui-input">
@@ -513,6 +523,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
             {
                 form.val('invoice_add',checkStatus.data[0]);
 
+
+
             }
 
 
@@ -532,7 +544,15 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
                 }
                 ,success: function(layero, index){
-                   $('#fdata_invoice_money').val(checkStatus.data[0].fdata_invoice_money);
+                    var imoney=checkStatus.data[0].fdata_total_money;
+                    if(checkStatus.data[0].fdata_total_money!=''){
+                        console.log(imoney);
+                        $("#fdata_invoice_money").val(imoney);
+                    }
+                    else{
+                        $('#fdata_invoice_money').val(checkStatus.data[0].fdata_invoice_money);
+                    }
+
                 }
                 ,yes: function(index, layero){
                     var submit = $("#LAY-invoice-front-submit");

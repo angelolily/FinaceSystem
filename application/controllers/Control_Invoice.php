@@ -98,6 +98,12 @@ class Control_Invoice extends CI_Controller
 
 
             }
+            if($search_val['fdata_total_money1']!="" && $search_val['fdata_total_money2']!="")
+            {
+                $where=$where." and fdata_total_money>='{$search_val['fdata_total_money1']}' and fdata_total_money<='{$search_val['fdata_total_money2']}'";
+
+
+            }
 
         }
         else
