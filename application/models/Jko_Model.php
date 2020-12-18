@@ -121,6 +121,7 @@ class Jko_Model extends CI_Model
 
         $result = $this->db->update_batch($taname, $values, $wherekey);
         $ss = $this->db->last_query();
+        $this->db->cache_delete_all();
         return $result;
 
     }

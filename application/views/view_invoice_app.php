@@ -111,6 +111,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				<button class="layui-btn layuiadmin-btn-admin layui-btn-normal" style="background-color: #3d405b" data-type="merge">合并开票</button>
                 <button class="layui-btn layuiadmin-btn-admin layui-btn-normal" style="background-color: #81b29a" data-type="refund">退票重新申请</button>
                 <button class="layui-btn layuiadmin-btn-admin layui-btn-normal" style="background-color: #ff9f1c" data-type="modify">发票信息修改</button>
+                <button class="layui-btn importexcel" lay-data="{accept: 'file'}">导入excel</button>
+                <a  target="_blank" href="./public/template.xlsx" style="text-decoration:underline;color: #5a0099;margin-left: 20px">下载导入模版</a>
 			</div>
 			<!--数据表格-->
 			<table id="finace_data_table" lay-filter="finace_data_table"></table>
@@ -421,6 +423,35 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 	});//表格
 
+    //excel导入
+    layui.use('upload', function(){
+        var upload = layui.upload;
+        //执行实例
+        var uploadInst = upload.render({
+                elem: '.importexcel'
+                , url: './UploadFile/upload_file'
+                , done: function (res, index) {
+                    if (res.code) {
+                        layer.open({
+                            title: '提示'
+                            ,content:res.msg
+                        });
+                        finace_data_table.reload();//数据刷新
+                        layer.close(index);//关闭弹层
+                    }
+                    else{
+                        layer.msg(res.msg,{icon: 5,time: 8000});
+                        finace_data_table.reload();//数据刷新
+                        layer.close(index);//关闭弹层
+                    }
+            }
+            ,auto: true //选择文件后不自动上传
+            ,bindAction: '#testListAction'
+            ,exts: 'xls|xlsx|csv'//指向一个按钮触发上传
+
+                });
+
+    });
 
 
     //绑定按钮事件
@@ -704,7 +735,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                                             {
                                                 //重新获取开票信息
                                                 g_account=result;
-                                                console.log("sdffsdfffffffff");
+
 
                                                 $("#invoice_name").empty();
                                                 $('#invoice_name').append(new Option("", "请选择...."));

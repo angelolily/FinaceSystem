@@ -1,7 +1,8 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 require_once 'vendor/autoload.php';
-
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
 //关联数组删除key
 
@@ -18,6 +19,12 @@ function bykey_reitem($arr, $key){
 
 }
 
+function batch_import_excel($file){
+    $spreadsheet = PhpOffice\PhpSpreadsheet\IOFactory::load($file);
+    $sheetData = $spreadsheet->getActiveSheet()->toArray();
+    return $sheetData;
+
+}
 
 /**
  * Notes:

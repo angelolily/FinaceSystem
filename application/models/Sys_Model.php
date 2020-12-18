@@ -107,9 +107,18 @@ class Sys_Model extends CI_Model
     }
 
     //插入记录
-    public function table_addRow($taname,$values){
+    public function table_addRow($taname,$values,$type=1){
 
-        $this->db->insert($taname,$values);
+        if($type==1)
+        {
+            $this->db->insert($taname,$values);
+        }
+        else
+        {
+            $this->db->insert_batch($taname,$values);
+        }
+
+
         $result = $this->db->affected_rows();
         $this->db->cache_delete_all();
         return $result;
