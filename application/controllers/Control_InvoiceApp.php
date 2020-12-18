@@ -8,6 +8,9 @@
  */
 defined('BASEPATH') or exit('No direct script access allowed');
 
+/**
+ * Class Control_InvoiceApp
+ */
 class Control_InvoiceApp extends CI_Controller
 {
 
@@ -31,9 +34,9 @@ class Control_InvoiceApp extends CI_Controller
             $this->load->view('login');
         }
         //获取已完成的报告编号
-        $rpoid_sql="select distinct fdata_repoid from finance_data where fdata_jg_id='$jgID'";
+        $rpoid_sql = "select distinct fdata_repoid from finance_data where fdata_jg_id='$jgID'";
 
-        $data['rpoid']=$this->Sys_Model->execute_sql($rpoid_sql);
+        $data['rpoid'] = $this->Sys_Model->execute_sql($rpoid_sql);
 
 
         $data['account'] = $this->Sys_Model->table_seleRow('account_tax_num,account_bank_phone,account_bank_name,account_bank_address,account_id,account_invoice_name,account_bank_num', 'finance_enterprise_account', array('account_jg_id' => $jgID));
@@ -127,9 +130,9 @@ class Control_InvoiceApp extends CI_Controller
             $finace_data['fdata_statue'] = "发票申请中";
 
             //通过税号，判断开户行是否存在与数据库中
-            if ($val['fdata_tax_num']) {
+            if ($val['fdata_tax_num'] != "") {
                 //不管是否存在，都先删除数据库中相同税号的开户信息，然后在重新插入新的
-                $this->Sys_Model->table_del("finance_enterprise_account", array('account_tax_num' => $val['fdata_tax_num']));
+                $this->Sys_Model->table_del("finance_enterprise_account", array('account_invoice_name' => $val['fdata_invoice_name']));
 
             }
             $this->Sys_Model->table_addRow("finance_enterprise_account", $enterprise_data);
@@ -239,8 +242,6 @@ class Control_InvoiceApp extends CI_Controller
 
     }
 
-
-
     /**
      * Notes:取消申请
      * User: Administrator
@@ -334,7 +335,7 @@ class Control_InvoiceApp extends CI_Controller
 
     }
 
-
+    //获取报告编号列表
     public function get_rpoid()
     {
         $result = array();
@@ -348,44 +349,53 @@ class Control_InvoiceApp extends CI_Controller
         echo json_encode($result);
     }
 
+
+    //获取报告编号列表
+    public function get_account()
+    {
+        $result = array();
+        $jgID = $this->session->userdata('c_jgID');
+        //获取已完成的报告编号
+        $account_sql = "select account_id,account_bank_num,account_invoice_name,account_tax_num,account_bank_phone,account_bank_name,account_bank_address from finance_enterprise_account where account_jg_id='$jgID'";
+        $result = $this->Sys_Model->execute_sql($account_sql);
+
+        header("HTTP/1.1 201 Created");
+        header("Content-type: application/json");
+        echo json_encode($result);
+    }
+
     //发票退改后，重新申请。
     public function refund_invoice_free()
     {
 
-        $upl_val= [];
-        $where_data= [];
-        $result= [];
+        $upl_val = [];
+        $where_data = [];
+        $result = [];
         $val = $this->input->post('val');
-        if(is_array($val) && count($val)>0)
-        {
+        if (is_array($val) && count($val) > 0) {
             //如果是合计开票，重新申请后，需要将合并开票解散，合计金额清零
             if ($val[0]['fdata_total_flag'] <> "") {
-                $upl_val['fdata_total_money']="";
-                $upl_val['fdata_total_flag']="";
+                $upl_val['fdata_total_money'] = "";
+                $upl_val['fdata_total_flag'] = "";
 
-                $where_data['fdata_total_flag']=$val[0]['fdata_total_flag'];
-            }
-            else
-            {
-                $where_data['fdata_num']=$val['fdata_num'];
+                $where_data['fdata_total_flag'] = $val[0]['fdata_total_flag'];
+            } else {
+                $where_data['fdata_num'] = $val['fdata_num'];
 
             }
-            $upl_val['fdata_statue']="发票申请中";
+            $upl_val['fdata_statue'] = "发票申请中";
             $result_upd = $this->Sys_Model->table_updateRow("finance_data", $upl_val, $where_data);
             if ($result_upd >= 0) {
                 $result['code'] = true;
                 $result['msg'] = '操作成功';
 
-            }
-            else{
+            } else {
                 $result['code'] = false;
                 $result['msg'] = '操作失败';
             }
 
 
-
-        }
-        else{
+        } else {
             $result['code'] = false;
             $result['msg'] = '数据获取失败';
         }
@@ -395,6 +405,67 @@ class Control_InvoiceApp extends CI_Controller
 
     }
 
+    //修改发票信息
+    public function modify_invoice()
+    {
+        $newval = $this->input->post('newdata');
+        $oldval = $this->input->post('olddata');
+        $isUpNew = 0;
+        $tatalData = [];
+        //判断是否合并开票，需要修改合并金额，并且将开票信息全部同步更新至其他合并开票信息中
+        if ($oldval[0]['fdata_total_flag'] != "") {
+
+            //计算新合计金额
+            $oldval['fdata_total_money'] = $oldval[0]['fdata_total_money'] - $oldval[0]['fdata_invoice_money'];
+            $fdata_total_money = $oldval[0]['fdata_total_money'] + $newval['fdata_invoice_money'];
+
+            //原有开票信息保留
+            $newval['fdata_total_flag'] = $oldval[0]['fdata_total_flag'];
+            $newval['fdata_total_money'] = $fdata_total_money;
+
+            //同步其他开票信息
+            $tatalData['fdata_total_money'] = $fdata_total_money;
+            $tatalData['fdata_tax_num'] = $newval['fdata_tax_num'];
+            $tatalData['fdata_bank'] = $newval['fdata_bank'];
+            $tatalData['fdata_bank_num'] = $newval['fdata_bank_num'];
+            $tatalData['fdata_invoice_type '] = $newval['fdata_invoice_type'];
+            $tatalData['fdata_bank_address'] = $newval['fdata_bank_address'];
+            $tatalData['fdata_bank_phone'] = $newval['fdata_bank_phone'];
+            $tatalData['fdata_invoice_rate'] = $newval['fdata_invoice_rate'];
+
+
+        }
+        $newval = bykey_reitem($newval, 'invoice_name');
+        //更新报告内容
+        $isUpNew = $this->Sys_Model->table_updateRow('finance_data', $newval, array('fdata_num' => $oldval[0]['fdata_num']));
+
+        if ($isUpNew > 0) {
+            //同步其他开票信息
+            if (count($tatalData) > 0) {
+                $this->Sys_Model->table_updateRow('finance_data', $tatalData, array('fdata_total_flag' => $oldval[0]['fdata_total_flag']));
+            }
+
+            //判断原有报告编号是否需要被释放
+            if ($newval['fdata_repoid'] != $oldval[0]['fdata_repoid']) {
+                //更新报告内容
+                $this->Jko_Model->table_updateRow("jko_projinfotb", array('C_PZZT' => null), array("C_RPOID" => $oldval[0]['fdata_repoid']));
+            }
+            $result['code'] = true;
+            $result['msg'] = '发票修改成功';
+
+
+        } else {
+            $result['code'] = false;
+            $result['msg'] = '发票修改失败，1001';
+        }
+
+
+        header("HTTP/1.1 201 Created");
+        header("Content-type: application/json");
+        echo json_encode($result);
+
+
+    }
 
 
 }

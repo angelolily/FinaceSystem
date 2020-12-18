@@ -107,9 +107,10 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 		<div class="layui-card-body">
 			<!--按钮功能区-->
 			<div style="padding-bottom: 10px;">
-				<button class="layui-btn layuiadmin-btn-admin layui-btn-normal" style="background-color: rgb(130,57,53)" data-type="add">发票申请</button>
-				<button class="layui-btn layuiadmin-btn-admin layui-btn-normal" style="background-color: rgb(64,116,52)" data-type="merge">合并开票</button>
-                <button class="layui-btn layuiadmin-btn-admin layui-btn-normal" style="background-color: rgb(20,68,106)" data-type="refund">退票重新申请</button>
+				<button class="layui-btn layuiadmin-btn-admin layui-btn-normal" style="background-color: #e07a5f" data-type="add">发票申请</button>
+				<button class="layui-btn layuiadmin-btn-admin layui-btn-normal" style="background-color: #3d405b" data-type="merge">合并开票</button>
+                <button class="layui-btn layuiadmin-btn-admin layui-btn-normal" style="background-color: #81b29a" data-type="refund">退票重新申请</button>
+                <button class="layui-btn layuiadmin-btn-admin layui-btn-normal" style="background-color: #ff9f1c" data-type="modify">发票信息修改</button>
 			</div>
 			<!--数据表格-->
 			<table id="finace_data_table" lay-filter="finace_data_table"></table>
@@ -121,6 +122,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                 {{#  } else if(d.fdata_statue== '已开票' || d.fdata_statue== '发票已寄出') { }}
                 <a class="layui-btn layui-btn-xs" lay-event="cancel_back"><i class="layui-icon layui-icon-delete"></i>退票/改开</a>
                 {{#  } }}
+
 			</script>
 
 			<!--字段模版-->
@@ -288,32 +290,32 @@ defined('BASEPATH') OR exit('No direct script access allowed');
     <div class="layui-form-item">
         <label class="layui-form-label layui-required">税号</label>
         <div class="layui-input-inline">
-            <input type="text" name="fdata_tax_num" id="fdata_tax_num" lay-verify="required"  class="layui-input" >
+            <input type="text" name="fdata_tax_num" id="fdata_tax_num"   class="layui-input" >
         </div>
     </div>
     <div class="layui-form-item">
         <label class="layui-form-label layui-required">开户行</label>
         <div class="layui-input-inline" >
-            <input type="text" name="fdata_bank" id="fdata_bank" lay-verify="required"  class="layui-input" >
+            <input type="text" name="fdata_bank" id="fdata_bank"  class="layui-input" >
         </div>
     </div>
 
     <div class="layui-form-item">
         <label class="layui-form-label layui-required">开户行账号</label>
         <div class="layui-input-inline" >
-            <input type="text" name="fdata_bank_num" id="fdata_bank_num" lay-verify="required"  class="layui-input" >
+            <input type="text" name="fdata_bank_num" id="fdata_bank_num"  class="layui-input" >
         </div>
     </div>
     <div class="layui-form-item">
         <label class="layui-form-label ">开户行电话</label>
         <div class="layui-input-inline" >
-            <input type="text" name="fdata_bank_phone" id="fdata_bank_phone" lay-verify="required"  class="layui-input" >
+            <input type="text" name="fdata_bank_phone" id="fdata_bank_phone"  class="layui-input" >
         </div>
     </div>
     <div class="layui-form-item">
         <label class="layui-form-label layui-required">开户行地址</label>
         <div class="layui-input-inline" >
-            <input type="text" name="fdata_bank_address" id="fdata_bank_address" lay-verify="required"  class="layui-input" >
+            <input type="text" name="fdata_bank_address" id="fdata_bank_address"  class="layui-input" >
         </div>
     </div>
     <div class="layui-form-item layui-form-text">
@@ -509,6 +511,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
         }
         else
         {
+
             if(g_account)
             {
                 if(Array.isArray(g_account))
@@ -688,6 +691,36 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                                     layer.msg(result.msg, {icon: 6});
                                     finace_data_table.reload();//数据刷新
                                     layer.close(index);//关闭弹层
+
+                                    $.ajax({
+                                        type:'post',
+                                        url:'./Control_InvoiceApp/get_account',
+                                        dataType:'json',
+                                        async : false,
+                                        success:function (result) {
+                                            console.log(result);
+
+                                            if(Array.isArray(result))
+                                            {
+                                                //重新获取开票信息
+                                                g_account=result;
+                                                console.log("sdffsdfffffffff");
+
+                                                $("#invoice_name").empty();
+                                                $('#invoice_name').append(new Option("", "请选择...."));
+                                                result.forEach(function (item){
+                                                    $('#invoice_name').append(new Option(item.account_invoice_name,item.account_id));// 下拉菜单里添加元素
+                                                });
+                                                layui.form.render("select");
+                                            }
+
+
+                                        }
+
+                                    });
+
+
+
                                 }
                                 else{
                                     layer.msg(result.msg, {icon: 5});
@@ -700,6 +733,123 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                     submit.trigger('click');
                 }
             });
+        }
+        ,modify:function ()
+        {
+            var checkStatus = table.checkStatus('finace_data'),data =checkStatus.data;
+            var flag=1;//判断验证是否通过
+            var merge=0;//判断是否是合并开票信息
+            var repoid="";//获取已选择的报告编号
+            var row;
+            if (checkStatus.data.length<1){
+                layer.alert('请勾选要修改的发票信息！');
+                return false;
+            }
+            if (checkStatus.data.length>1){
+                layer.alert('请不要勾选多条发票信息进行修改');
+                return false;
+            }
+            checkStatus.data.forEach(function(item){
+                console.log(item.fdata_statue);
+                repoid=item.fdata_repoid;
+                row=item;
+                if(!(item.fdata_statue=="发票申请中" || item.fdata_statue=="申请驳回"))
+                {
+                    layer.alert('勾选的信息必须是发票申请中，或申请驳回状态！');
+                    flag=0;
+
+                }
+
+            });
+
+            if(flag==1)
+            {
+                $.ajax({
+                    type:'post',
+                    url:'./Control_InvoiceApp/get_rpoid',
+                    dataType:'json',
+                    async : false,
+                    success:function (result) {
+                        console.log(result);
+
+                        if(Array.isArray(result))
+                        {
+                            g_proj=result;
+                            $("#fdata_repoid").empty();
+                            $('#fdata_repoid').append(new Option(repoid, repoid));
+                            result.forEach(function (item){
+                                $('#fdata_repoid').append(new Option(item.c_rpoid, item.c_rpoid));// 下拉菜单里添加元素
+                            });
+                            layui.form.render("select");
+
+                        }
+
+
+                    }
+
+                });
+
+
+                var confirmMsg="如果您修改的是合并开票信息其中的一笔资料，合并金额，开票信息会同步修改到其他合并开票资料中";
+                layer.confirm(confirmMsg, {icon: 3, title:'提示'}, function(index){
+                    //do something
+                    layer.close(index);
+
+
+                    console.log(row);
+                    form.val('invoice_add',row);
+                    layer.open({
+                        type: 1
+                        ,title: '编辑发票信息'
+                        ,content: $("#invoice_add")
+                        ,maxmin: true
+                        ,area: ['1000px', '600px']
+                        ,btn: ['确定', '取消']
+                        ,yes: function(index, layero){
+                            var submit = $("#LAY-invoice-front-submit");
+                            //监听提交
+                            form.on('submit(LAY-invoice-front-submit)', function(data){
+                                var field = data.field; //获取提交的字段
+                                var oldselectrow =checkStatus.data;//获取原有数据
+                                //提交 Ajax 成功后，静态更新表格中的数据
+                                $.ajax({
+                                    type:'post',
+                                    url:'./Control_InvoiceApp/modify_invoice',
+                                    data:{newdata:field,olddata:oldselectrow},
+                                    dataType:'json',
+                                    async : false,
+                                    success:function (result) {
+                                        if(result.code){
+                                            layer.msg(result.msg, {icon: 6});
+                                            checkedSet= new Set();
+                                            gb_total_count=0;
+                                            finace_data_table.reload();
+                                            layer.close(index);
+                                        }
+                                        else{
+                                            layer.msg(result.msg, {icon: 5});
+                                            layer.close(index);
+                                        }
+                                    }
+
+                                });
+                            });
+
+                            submit.trigger('click');
+                        }
+                    });
+
+                });
+
+
+
+
+            }
+
+
+
+
+
         }
         ,refund:function (){
             var checkStatus = table.checkStatus('finace_data'),data =checkStatus.data;

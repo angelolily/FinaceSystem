@@ -551,6 +551,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                     }
                     else{
                         $('#fdata_invoice_money').val(checkStatus.data[0].fdata_invoice_money);
+
                     }
 
                 }
