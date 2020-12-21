@@ -71,7 +71,15 @@ class UploadFile extends CI_Controller
         $rpoid=[];//记录要报告编号,用于同步更新到OA中
         $jgID = $this->session->userdata('c_jgID');
         //获取已完成的报告编号
-        $rpoid_sql = "select distinct c_rpoid,C_CJRPOTDATE,C_PROJNAME,C_ENTRUST,C_AMOUNT,c_projtype from jko_projinfotb where c_jgID='$jgID' and c_projstate='报告已完成' and C_PZZT is null";
+        if($jgID=="FJJK")
+        {
+            $rpoid_sql = "select distinct c_rpoid,C_CJRPOTDATE,C_PROJNAME,C_ENTRUST,C_AMOUNT,c_projtype from jko_projinfotb where c_projstate='报告已完成' and C_PZZT is null";
+        }
+        else
+        {
+            $rpoid_sql = "select distinct c_rpoid,C_CJRPOTDATE,C_PROJNAME,C_ENTRUST,C_AMOUNT,c_projtype from jko_projinfotb where c_jgID='$jgID' and c_projstate='报告已完成' and C_PZZT is null";
+        }
+
         $result_poid = $this->Jko_Model->execute_sql($rpoid_sql);
         $DbInsResult=array();//最终插入数据库结构
         $file = $_FILES['file']; // 获取上传的文件

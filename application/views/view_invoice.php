@@ -203,7 +203,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 
 <!--填写新开票信息-->
-<from class="layui-form" lay-filter="invoice_add" id="invoice_info_add" style="display:none;padding: 20px;">
+<from class="layui-form" lay-filter="invoice_info_add" id="invoice_info_add" style="display:none;padding: 20px;">
     <div class="layui-form-item">
         <label class="layui-form-label  layui-required">税率</label>
         <div class="layui-input-inline" >
@@ -386,8 +386,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
             ,{field: 'fdata_proj_name', align:'center',rowspan: 2,title: '项目名称',width:300}
             ,{field: 'fdata_total_flag',align:'center',rowspan: 2,title: '合计标识',width:150,sort:true}
             ,{field: 'fdata_total_money',align:'center',rowspan: 2,title: '合计开票金额',width:200}
-            ,{field: 'fdata_amount',align:'center',rowspan: 2,title: '评估额',width:150}
-            ,{field: 'fdata_evaluation',align:'center',rowspan: 2,title: '应收评估费',width:150}
+            ,{field: 'fdata_amount',align:'center',rowspan: 2,title: '评估额(万元)',width:150}
+            ,{field: 'fdata_evaluation',align:'center',rowspan: 2,title: '应收评估费（元）',width:150}
 			,{field: 'fdata_repoid',align:'center', rowspan: 2,title: '报告编号',width:150}
             ,{field: '', colspan: 8,align:'center',title: '开票信息',width:250}
             ,{field: '', colspan: 3,align:'center',title: '发票信息',width:350}
@@ -507,13 +507,14 @@ defined('BASEPATH') OR exit('No direct script access allowed');
             });
 
             var checkStatus = table.checkStatus('finace_data'),cdata =checkStatus.data;
-            console.log(cdata);
-            if (checkStatus.data.length<1){
+
+            if (cdata.length<1){
                 layer.alert('请勾选要填写的开票信息！');
                 return false;
             }
 
-            if(checkStatus.data[0].fdata_statue!='开票中' && checkStatus.data[0].fdata_statue!='已开票' && checkStatus.data[0].fdata_statue!='发票已寄出')
+
+            if(!(cdata[0].fdata_statue=='开票中' || cdata[0].fdata_statue=='已开票' || cdata[0].fdata_statue=='发票已寄出'))
             {
                 layer.alert('必须是已审核的项目，或未收款，才能开具发票！');
                 return false;
@@ -521,70 +522,68 @@ defined('BASEPATH') OR exit('No direct script access allowed');
             }
             else
             {
-                form.val('invoice_add',checkStatus.data[0]);
+
+                layer.open({
+                    type: 1
+                    ,title: '发票信息填写'
+                    ,content: $("#invoice_info_add")
+                    ,maxmin: true
+                    ,area: ['600px', '450px']
+                    ,btn: ['提交申请']
+                    ,anim: 3
+                    ,end:function () {
+                        $("#invoice_info_add").find('input[type=text],select,input[type=hidden]').each(function() {
+                            $(this).val('');
+                        });
+
+                    }
+                    ,success: function(layero, index){
+
+                        $('#fdata_invoice_money').val(cdata[0].fdata_invoice_money);
+                        var imoney=cdata[0].fdata_total_money;
+
+                        if(cdata[0].fdata_total_money!=null){
+                            $("#fdata_invoice_money").val(imoney);
+                        }
 
 
+                    }
+                    ,yes: function(index, layero){
+                        var submit = $("#LAY-invoice-front-submit");
+                        //监听提交
+                        form.on('submit(LAY-invoice-front-submit)', function(data){
+
+                            var field = data.field; //获取提交的字段
+                            //提交 Ajax 成功后，静态更新表格中的数据
+                            $.ajax({
+                                type:'post',
+                                url:'./Control_Invoice/invoice_info_update',
+                                data:{val:field,fdata:checkStatus.data,type:1},
+                                dataType:'json',
+                                async : false,
+                                success:function (result) {
+                                    if(result.code){
+                                        layer.msg(result.msg, {icon: 6});
+                                        finace_data_table.reload();//数据刷新
+                                        layer.close(index);//关闭弹层
+                                    }
+                                    else{
+                                        layer.msg(result.msg, {icon: 5});
+                                    }
+                                }
+
+                            });
+                        });
+
+                        submit.trigger('click');
+                    }
+                });
 
             }
 
 
 
-            layer.open({
-                type: 1
-                ,title: '发票信息填写'
-                ,content: $("#invoice_info_add")
-                ,maxmin: true
-                ,area: ['600px', '450px']
-                ,btn: ['提交申请']
-                ,anim: 3
-                ,end:function () {
-                    $("#invoice_info_add").find('input[type=text],select,input[type=hidden]').each(function() {
-                        $(this).val('');
-                    });
 
-                }
-                ,success: function(layero, index){
-                    var imoney=checkStatus.data[0].fdata_total_money;
-                    if(checkStatus.data[0].fdata_total_money!=''){
-                        console.log(imoney);
-                        $("#fdata_invoice_money").val(imoney);
-                    }
-                    else{
-                        $('#fdata_invoice_money').val(checkStatus.data[0].fdata_invoice_money);
-
-                    }
-
-                }
-                ,yes: function(index, layero){
-                    var submit = $("#LAY-invoice-front-submit");
-                    //监听提交
-                    form.on('submit(LAY-invoice-front-submit)', function(data){
-
-                        var field = data.field; //获取提交的字段
-                        //提交 Ajax 成功后，静态更新表格中的数据
-                        $.ajax({
-                            type:'post',
-                            url:'./Control_Invoice/invoice_info_update',
-                            data:{val:field,fdata:checkStatus.data,type:1},
-                            dataType:'json',
-                            async : false,
-                            success:function (result) {
-                                if(result.code){
-                                    layer.msg(result.msg, {icon: 6});
-                                    finace_data_table.reload();//数据刷新
-                                    layer.close(index);//关闭弹层
-                                }
-                                else{
-                                    layer.msg(result.msg, {icon: 5});
-                                }
-                            }
-
-                        });
-                    });
-
-                    submit.trigger('click');
-                }
-            });
         }
         ,cancel: function(){
             $("#invoice_cancel").find('input[type=text],select,input[type=hidden]').each(function() {

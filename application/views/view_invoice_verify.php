@@ -130,6 +130,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				<button class="layui-btn layuiadmin-btn-admin layui-btn-normal" style="background-color: rgb(64,116,52)"  data-type="pass">审核通过</button>
 				<button class="layui-btn layuiadmin-btn-admin layui-btn-normal" style="background-color: rgb(130,57,53)" data-type="back">审核驳回</button>
                 <button class="layui-btn layuiadmin-btn-admin layui-btn-normal"  data-type="express">物流信息</button>
+                <button class="layui-btn importexcel" lay-data="{accept: 'file'}">导入excel</button>
+                <a  target="_blank" href="./public/template.xlsx" style="text-decoration:underline;color: #5a0099;margin-left: 20px">下载导入模版</a>
 			</div>
 			<!--数据表格-->
 			<table id="finace_data_table" lay-filter="finace_data_table"></table>
@@ -294,6 +296,37 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 
 	});//表格
+
+
+    //excel导入
+    layui.use('upload', function(){
+        var upload = layui.upload;
+        //执行实例
+        var uploadInst = upload.render({
+            elem: '.importexcel'
+            , url: './UploadFile/upload_file'
+            , done: function (res, index) {
+                if (res.code) {
+                    layer.open({
+                        title: '提示'
+                        ,content:res.msg
+                    });
+                    finace_data_table.reload();//数据刷新
+                    layer.close(index);//关闭弹层
+                }
+                else{
+                    layer.msg(res.msg,{icon: 5,time: 8000});
+                    finace_data_table.reload();//数据刷新
+                    layer.close(index);//关闭弹层
+                }
+            }
+            ,auto: true //选择文件后不自动上传
+            ,bindAction: '#testListAction'
+            ,exts: 'xls|xlsx|csv'//指向一个按钮触发上传
+
+        });
+
+    });
 
     console.log(g_jg);
 
