@@ -225,7 +225,8 @@ class Sys_Model extends CI_Model
         $field='fdata_repoid,fdata_proj_name,fdata_invoice_name,fdata_amount
                 ,fdata_evaluation,fdata_invoice_type,fdata_invoice_date,fdata_invoice_money
                 ,fdata_invoice_num,fdata_money_date,fdata_refund_verify,fdata_refund_date,fdata_alter_date,fdata_alter_money
-                ,fdata_alter_rate,fdata_alter_amount,fdata_alter_invoice_num';
+                ,fdata_alter_rate,fdata_alter_amount,fdata_alter_invoice_num,fdata_num,fdata_tax_num,fdata_bank_address,
+                fdata_bank_phone,fdata_bank,fdata_bank_num,fdata_finace_emp';
         $sql_query="Select $field from finance_data a where not exists(select 1 from finance_data where fdata_total_flag=a.fdata_total_flag and fdata_id>a.fdata_id)";
         if($wheredata!=""){
             $sql_query=$sql_query." and ".$wheredata;
@@ -240,6 +241,16 @@ class Sys_Model extends CI_Model
     }
 
 
+    //批量修改记录
+    public function table_updateBatchRow($taname, $values, $wherekey)
+    {
+
+        $result = $this->db->update_batch($taname, $values, $wherekey);
+        $ss = $this->db->last_query();
+        $this->db->cache_delete_all();
+        return $result;
+
+    }
 
 
 

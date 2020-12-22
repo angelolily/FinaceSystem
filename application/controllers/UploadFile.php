@@ -228,6 +228,63 @@ class UploadFile extends CI_Controller
 
     }
 
+    public function upload_file_nn()
+    {
+        $echo_result=[];
+        $rpoid=[];//记录要报告编号,用于同步更新到OA中
+        $file = $_FILES['file']; // 获取上传的文件
+        if ($file == null) {
+            exit(json_encode(array('code' => 1, 'msg' => '未上传文件')));
+        }
+        // 获取文件后缀
+        $temp = explode(".", $file["name"]);
+        $extension = end($temp);
+        $file_size = $file['size'];
+        $file_name=date('Ymdhis').rand(111,999);//文件名去中文
+        $file_path = "D:\\importExcel\\" .$file_name . "." . $extension;
+        $file_tmp = $file['tmp_name'];
+        $move_result = move_uploaded_file($file_tmp, $file_path);
+        if ($move_result) {
+            $Mismatch=array();//不匹配报错
+            $Match=array();//录入的报告编号
+            $excel_inData=batch_import_excel($file_path);
+//            $excel_num=count($excel_inData);//记录Excel中记录总数
+            foreach ($excel_inData as $row)
+            {
+                if ($row[0]!=null && $row[0]!="订单号" && $row[0]!="发票开具数量：" && $row[0]!="订单总价合计：" && $row[0]!="福建建科房地产估价有限公司" ){
+                    $temp_row['fdata_num']=$row[0];
+                    $temp_row['fdata_invoice_date']=$row[2];
+                    $temp_row['fdata_invoice_num']=$row[6];
+                    $temp_row['fdata_tax_amount']=$row[15];
+                    $temp_row['fdata_finace_emp']=$row[19];
+                    $temp_row['fdata_tax_rate']=0.06;
+                    $temp_row['fdata_statue']="已开票";
+                    array_push($rpoid,$temp_row);
+                }
+
+
+            }
+                $result_rpoid=$this->Sys_Model->table_updateBatchRow("finance_data",$rpoid,"fdata_num");
+                if ($result_rpoid>=0){
+                    $echo_result['code']=true;
+                    $echo_result['msg']="成功插入数据：".$result_rpoid."条";
+
+                }
+                else{
+                    $echo_result['code']=false;
+                    $echo_result['msg']="插入数据失败";
+                }
+
+            } else {
+                $echo_result['code']=false;
+                $echo_result['msg']="全部插入失败";
+
+            }
+        header("HTTP/1.1 201 Created");
+        header("Content-type: application/json");
+        echo json_encode($echo_result);
+    }
+
 
 
 }

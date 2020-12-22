@@ -151,7 +151,10 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				<button class="layui-btn layuiadmin-btn-admin layui-btn-normal" style="background-color: rgb(130,57,53)" data-type="add">开票信息填写</button>
 				<button class="layui-btn layuiadmin-btn-admin layui-btn-normal" style="background-color: rgb(64,116,52)" data-type="cancel">退票信息填写</button>
                 <button class="layui-btn layuiadmin-btn-admin layui-btn-normal"  data-type="update">改开票信息填写</button>
-                <button class="layui-btn layuiadmin-btn-admin layui-btn-normal" style="background-color: rgb(20,68,106)"  data-type="excel">导出Excel</button>
+                <button class="layui-btn layuiadmin-btn-admin layui-btn-normal" style="background-color: rgb(20,68,106)"  data-type="excel">导出报表Excel</button>
+                <button class="layui-btn layuiadmin-btn-admin layui-btn-normal" style="background-color: rgb(180,110,60)"  data-type="nuo_excel">导出诺诺表</button>
+                <button class="layui-btn importexcel" lay-data="{accept: 'file'}" style="background-color: rgb(150,120,90)"  data-type="out_nnexcel">导入已开票Excel</button>
+
 			</div>
 			<!--数据表格-->
 			<table id="finace_data_table" lay-filter="finace_data_table"></table>
@@ -379,7 +382,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
         },
 		cols: [[
 			{id:'radio',type: 'radio', rowspan: 2,fixed: 'left'}
-			,{field: 'fdata_num',align:'center',rowspan: 2,title: '单号',width:150}
+			,{field: 'fdata_num',align:'center',rowspan: 2,title: '单号',width:180}
 			,{field: 'fdata_statue',align:'center', rowspan: 2,title: '状态',width:150}
             ,{field: 'fdata_jg_id',align:'center',rowspan: 2, title: '业务机构',width:150,templet:'#fdata_jg-Tpl'}
             ,{field: 'fdata_emp',align:'center', rowspan: 2,title: '申请人',width:150}
@@ -538,11 +541,11 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
                     }
                     ,success: function(layero, index){
-
+                        form.val("invoice_info_add",cdata[0]);
                         $('#fdata_invoice_money').val(cdata[0].fdata_invoice_money);
                         var imoney=cdata[0].fdata_total_money;
-
-                        if(cdata[0].fdata_total_money!=null){
+                        console.log(cdata[0].fdata_total_money);
+                        if(typeof(imoney) == "null"){
                             $("#fdata_invoice_money").val(imoney);
                         }
 
@@ -713,6 +716,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                 }
             });
         }
+
         ,excel: function(){
 
             $.ajax({
@@ -738,8 +742,56 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 
         }
-    };
 
+        ,nuo_excel: function(){
+
+            $.ajax({
+                type:'post',
+                url:'./Control_Invoice/outNuoNuoExcel',
+                data:{val:g_searchval},
+                dataType:'json',
+                async : false,
+                success:function (res) {
+                    LAY_EXCEL.exportExcel(res, '诺诺导入.xlsx', 'xlsx');
+                },
+                error:function (ss)
+                {
+                    console.log(ss);
+                }
+
+            });
+
+
+        }
+    };
+    layui.use('upload', function(){
+        var upload = layui.upload;
+        //执行实例
+        var uploadInst = upload.render({
+            elem: '.importexcel'
+            , url: './UploadFile/upload_file_nn'
+            , done: function (res, index) {
+                if (res.code) {
+                    layer.open({
+                        title: '提示'
+                        ,content:res.msg
+                    });
+                    finace_data_table.reload();//数据刷新
+                    layer.close(index);//关闭弹层
+                }
+                else{
+                    layer.msg(res.msg,{icon: 5,time: 8000});
+                    finace_data_table.reload();//数据刷新
+                    layer.close(index);//关闭弹层
+                }
+            }
+            ,auto: true //选择文件后不自动上传
+            ,bindAction: '#testListAction'
+            ,exts: 'xls|xlsx|csv'//指向一个按钮触发上传
+
+        });
+
+    });
     //监听工具条
     table.on('tool(finace_data_table)', function(obj){
         var selectrow =obj.data;
