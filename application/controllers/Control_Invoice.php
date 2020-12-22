@@ -94,13 +94,13 @@ class Control_Invoice extends CI_Controller
             }
             if($search_val['invoice_money1']!="" && $search_val['invoice_money2']!="")
             {
-                $where=$where." and fdata_invoice_money>='{$search_val['invoice_money1']}' and fdata_invoice_money<='{$search_val['invoice_money2']}'";
+                $where=$where." and fdata_invoice_money>={$search_val['invoice_money1']} and fdata_invoice_money<={$search_val['invoice_money2']}";
 
 
             }
             if($search_val['fdata_total_money1']!="" && $search_val['fdata_total_money2']!="")
             {
-                $where=$where." and fdata_total_money>='{$search_val['fdata_total_money1']}' and fdata_total_money<='{$search_val['fdata_total_money2']}'";
+                $where=$where." and fdata_total_money>={$search_val['fdata_total_money1']} and fdata_total_money<={$search_val['fdata_total_money2']}";
 
 
             }
@@ -173,6 +173,72 @@ class Control_Invoice extends CI_Controller
         echo json_encode($items,true);
 
 
+    }
+
+
+    /**
+     * Notes:
+     * User: ljx
+     * DateTime: 2020/12/22 17:02
+     * 导入诺诺开票系统
+     */
+    public function outNuoNuoExcel()
+    {
+        $valueRow=[];//获取值的数据
+        $item=[];//最终导出数据
+        $twoRow=['','','','','','','','','','','','','','','','','','','','','','','','','','','',''];
+        $threeRow = [
+            '订单编号*', '发票种类', '名称*',
+            '税号', '地址', '电话', '开户行',
+            '账号', '发票性质', '推送手机',
+            '邮箱', '备注', '商品名称*', '税率*',
+            '规格型号', '计量单位', '数量', '含税单价',
+            '金额', '税收分类编码', '是否享受优惠政策',
+            '优惠政策名称', '零税率标识', '扣除额', '折扣金额',
+            '收款人', '复核人', '开票人'
+        ];
+        array_push($item,$twoRow);
+        array_push($item,$twoRow);
+        array_push($item,$threeRow);
+        $items=$this->Sys_Model->output_excel("fdata_statue='开票中'","");
+        if(count($items)>0)
+        {
+            foreach ($items as $rows)
+            {
+                $tmpValue[0]=$rows['fdata_num'];
+                $tmpValue[1]=$rows['fdata_invoice_type']==1?'p':'s';
+                $tmpValue[2]=$rows['fdata_invoice_name'];
+                $tmpValue[3]=$rows['fdata_tax_num'];
+                $tmpValue[4]=$rows['fdata_bank_address'];
+                $tmpValue[5]=$rows['fdata_bank_phone'];
+                $tmpValue[6]=$rows['fdata_bank'];
+                $tmpValue[7]=$rows['fdata_bank_num'];
+                $tmpValue[8]='';
+                $tmpValue[9]='';
+                $tmpValue[10]='';
+                $tmpValue[11]='';
+                $tmpValue[12]='评估费';
+                $tmpValue[13]='0.06';
+                $tmpValue[14]='';
+                $tmpValue[15]='';
+                $tmpValue[16]='';
+                $tmpValue[17]='';
+                $tmpValue[18]=$rows['fdata_invoice_money'];
+                $tmpValue[19]='';
+                $tmpValue[20]='';
+                $tmpValue[21]='';
+                $tmpValue[22]='';
+                $tmpValue[23]='';
+                $tmpValue[24]='';
+                $tmpValue[25]='';
+                $tmpValue[26]='';
+                $tmpValue[27]=$rows['fdata_finace_emp'];
+                array_push($item,$tmpValue);
+
+            }
+        }
+
+        echo json_encode($item,true);
     }
 
     //释放退票的报告编号
